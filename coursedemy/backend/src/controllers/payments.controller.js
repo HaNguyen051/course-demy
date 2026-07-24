@@ -3,21 +3,43 @@ const axios = require('axios');
 const { createMomoSignature, verifyMomoSignature } = require('../utils/momo.util');
 const { buildVnpayUrl, verifyVnpaySignature }       = require('../utils/vnpay.util');
 
-// ─── Helper: side-effects sau thanh toán thành công (enrollments + coupon + cart) ─
+// ─── Helper: side-effects sau thanh toán thành công (enrollments + coupon + cart + instructor income) ─
 // Caller tự chịu trách nhiệm cập nhật payments.status và orders.status.
 function applyPaymentSideEffects(orderId, couponId, userId) {
   const orderItems = db.prepare(`
-    SELECT oi.course_id
+    SELECT oi.course_id, oi.price, c.instructor_id
     FROM order_items oi
+    JOIN courses c ON oi.course_id = c.id
     WHERE oi.order_id = ?
   `).all(orderId);
 
-  // 1. INSERT OR IGNORE từng course vào enrollments
-  const insertEnrollment = db.prepare(
-    'INSERT OR IGNORE INTO enrollments (user_id, course_id) VALUES (?, ?)'
+  // Lấy tổng tiền order để tính discount ratio (nếu có coupon)
+  const order = db.prepare('SELECT total_amount FROM orders WHERE id = ?').get(orderId);
+  const totalOriginalPrice = orderItems.reduce((sum, item) => sum + item.price, 0);
+  const discountRatio = (order && totalOriginalPrice > 0)
+    ? order.total_amount / totalOriginalPrice
+    : 1;
+
+  // 1. INSERT OR IGNORE từng course vào enrollments + phân phối doanh thu cho instructor
+  const insertEnrollment        = db.prepare('INSERT OR IGNORE INTO enrollments (user_id, course_id) VALUES (?, ?)');
+  const updateInstructorBalance = db.prepare('UPDATE users SET balance = balance + ? WHERE id = ?');
+  const insertInstructorTx      = db.prepare(
+    `INSERT INTO wallet_transactions (user_id, amount, type, status, description)
+     VALUES (?, ?, 'income', 'success', ?)`
   );
+
   for (const item of orderItems) {
     insertEnrollment.run(userId, item.course_id);
+    // Phân phối thu nhập theo tỉ lệ discount (nếu có coupon)
+    const actualPrice = Math.round(item.price * discountRatio * 100) / 100;
+    if (actualPrice > 0) {
+      updateInstructorBalance.run(actualPrice, item.instructor_id);
+      insertInstructorTx.run(
+        item.instructor_id,
+        actualPrice,
+        `Thu nhập từ bán khóa học trong đơn hàng #${orderId}`
+      );
+    }
   }
 
   // 2. Tăng used_count của coupon nếu có

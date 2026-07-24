@@ -105,34 +105,38 @@ function changePassword(req, res) {
 function updateAvatar(req, res) {
   const { avatar_url } = req.body;
 
-  if (!avatar_url) {
+  // Cho phép chuỗi rỗng để xóa avatar; chỉ bắt buộc khi không phải string
+  if (avatar_url === undefined || avatar_url === null) {
     return res.status(400).json({
       success: false,
-      message: 'Vui lòng nhập link ảnh đại diện',
+      message: 'Vui lòng cung cấp trường avatar_url (có thể để trống để xóa ảnh)',
     });
   }
 
-  // Validate URL hợp lệ
-  try {
-    const parsed = new URL(avatar_url);
-    if (!['http:', 'https:'].includes(parsed.protocol)) {
-      throw new Error('invalid protocol');
+  // Validate URL hợp lệ chỉ khi có giá trị
+  if (avatar_url !== '') {
+    try {
+      const parsed = new URL(avatar_url);
+      if (!['http:', 'https:'].includes(parsed.protocol)) {
+        throw new Error('invalid protocol');
+      }
+    } catch {
+      return res.status(400).json({
+        success: false,
+        message: 'Link ảnh không hợp lệ',
+      });
     }
-  } catch {
-    return res.status(400).json({
-      success: false,
-      message: 'Link ảnh không hợp lệ',
-    });
   }
 
   try {
+    const savedUrl = avatar_url || null;
     db.prepare('UPDATE users SET avatar = ? WHERE id = ?')
-      .run(avatar_url, req.user.id);
+      .run(savedUrl, req.user.id);
 
     return res.status(200).json({
       success: true,
-      message: 'Cập nhật ảnh đại diện thành công',
-      data: { avatar: avatar_url },
+      message: avatar_url ? 'Cập nhật ảnh đại diện thành công' : 'Đã xóa ảnh đại diện',
+      data: { avatar: savedUrl },
     });
   } catch (err) {
     console.error('[updateAvatar]', err);

@@ -538,7 +538,7 @@ function getInstructorStatsCourses(req, res) {
   try {
     const instructorId = req.user.id;
 
-    // Doanh thu theo từng khóa học tính từ order_items (chính xác nhất)
+    // Doanh thu theo từng khóa học — chỉ tính order đã paid
     const courseStats = db.prepare(`
       SELECT
         c.id,
@@ -546,14 +546,17 @@ function getInstructorStatsCourses(req, res) {
         c.thumbnail,
         c.status,
         COUNT(DISTINCT e.user_id)              AS students_count,
-        COALESCE(SUM(oi.price), 0)             AS revenue,
+        COALESCE((
+          SELECT SUM(oi.price)
+          FROM order_items oi
+          JOIN orders o ON oi.order_id = o.id
+          WHERE oi.course_id = c.id AND o.status = 'paid'
+        ), 0)                                  AS revenue,
         COALESCE(ROUND(AVG(rv.rating), 1), 0) AS avg_rating,
         COUNT(DISTINCT rv.id)                  AS reviews_count
       FROM courses c
-      LEFT JOIN enrollments e  ON e.course_id = c.id
-      LEFT JOIN order_items oi ON oi.course_id = c.id
-      LEFT JOIN orders o       ON oi.order_id = o.id AND o.status = 'paid'
-      LEFT JOIN reviews rv     ON rv.course_id = c.id
+      LEFT JOIN enrollments e ON e.course_id = c.id
+      LEFT JOIN reviews rv    ON rv.course_id = c.id
       WHERE c.instructor_id = ?
       GROUP BY c.id
       ORDER BY revenue DESC
@@ -569,12 +572,105 @@ function getInstructorStatsCourses(req, res) {
   }
 }
 
+// ─── GET /api/instructor/students ────────────────────────────────────────────
+// Tổng hợp tất cả học viên từ mọi khóa học của giảng viên
+function getInstructorAllStudents(req, res) {
+  try {
+    const instructorId = req.user.id;
+    const { course_id, search, page = 1, limit = 20 } = req.query;
+
+    const pageNum  = Math.max(1, parseInt(page) || 1);
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 20));
+    const offset   = (pageNum - 1) * limitNum;
+
+    const conditions = ['c.instructor_id = ?'];
+    const params     = [instructorId];
+
+    if (course_id) {
+      conditions.push('e.course_id = ?');
+      params.push(parseInt(course_id));
+    }
+
+    if (search && search.trim()) {
+      conditions.push('(u.full_name LIKE ? OR u.email LIKE ?)');
+      const kw = `%${search.trim()}%`;
+      params.push(kw, kw);
+    }
+
+    const where = `WHERE ${conditions.join(' AND ')}`;
+
+    // Đếm tổng (không tính duplicate nếu 1 user mua nhiều khóa)
+    const { total } = db.prepare(`
+      SELECT COUNT(*) AS total
+      FROM enrollments e
+      JOIN users u   ON e.user_id   = u.id
+      JOIN courses c ON e.course_id = c.id
+      ${where}
+    `).get(...params);
+
+    const rows = db.prepare(`
+      SELECT
+        u.id          AS user_id,
+        u.full_name,
+        u.email,
+        u.avatar,
+        c.id          AS course_id,
+        c.title       AS course_title,
+        c.thumbnail   AS course_thumbnail,
+        e.enrolled_at,
+        COALESCE(
+          (SELECT ROUND(
+              CAST(COUNT(CASE WHEN lp.is_completed = 1 THEN 1 END) AS REAL) /
+              NULLIF(COUNT(l.id), 0) * 100
+           )
+           FROM lessons l
+           LEFT JOIN lesson_progress lp ON lp.lesson_id = l.id AND lp.user_id = e.user_id
+           JOIN sections s ON l.section_id = s.id
+           WHERE s.course_id = e.course_id
+          ), 0
+        ) AS progress_percent
+      FROM enrollments e
+      JOIN users u   ON e.user_id   = u.id
+      JOIN courses c ON e.course_id = c.id
+      ${where}
+      ORDER BY e.enrolled_at DESC
+      LIMIT ? OFFSET ?
+    `).all(...params, limitNum, offset);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        students: rows.map(r => ({
+          user_id:          r.user_id,
+          full_name:        r.full_name,
+          email:            r.email,
+          avatar:           r.avatar,
+          enrolled_at:      r.enrolled_at,
+          progress_percent: r.progress_percent ?? 0,
+          course: {
+            id:        r.course_id,
+            title:     r.course_title,
+            thumbnail: r.course_thumbnail,
+          },
+        })),
+        total,
+        page:       pageNum,
+        totalPages: Math.ceil(total / limitNum),
+      },
+    });
+  } catch (err) {
+    console.error('[getInstructorAllStudents]', err);
+    return res.status(500).json({ success: false, message: 'Lỗi server' });
+  }
+}
+
 module.exports = {
   getInstructorCourses,
   createCourse,
   updateCourse,
   deleteCourse,
   getCourseStudents,
+  getInstructorAllStudents,
   createWithdrawal,
   getWithdrawals,
   getInstructorQuestions,

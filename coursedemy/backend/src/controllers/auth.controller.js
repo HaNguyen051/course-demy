@@ -110,7 +110,7 @@ function login(req, res) {
   // Tìm user — dùng thông báo chung khi không tìm thấy để không lộ email
   const user = db
     .prepare(
-      `SELECT id, full_name, email, password, role, status, is_active,
+      `SELECT id, full_name, email, password, role, avatar, status, is_active,
               failed_login_attempts, locked_until
        FROM users WHERE email = ?`
     )
@@ -215,11 +215,12 @@ function login(req, res) {
     data: {
       token,
       user: {
-        id: user.id,
+        id:        user.id,
         full_name: user.full_name,
-        email: user.email,
-        role: user.role,
-        status: user.status,
+        email:     user.email,
+        role:      user.role,
+        avatar:    user.avatar ?? null,
+        status:    user.status,
       },
     },
   });

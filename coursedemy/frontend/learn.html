@@ -248,6 +248,121 @@
       .learn-sidebar { max-height: 280px; position: static; }
       .learn-main { max-height: none; padding: 16px; }
     }
+
+    /* ── Q&A Styles ── */
+    .lesson-tabs {
+      display: flex; gap: 4px;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 24px;
+    }
+    .lesson-tab-btn {
+      padding: 10px 18px; background: none; border: none;
+      border-bottom: 2px solid transparent; margin-bottom: -2px;
+      font-size: .88rem; font-weight: 600; color: var(--text-dim);
+      cursor: pointer; transition: all .15s; font-family: inherit;
+    }
+    .lesson-tab-btn:hover { color: var(--text); }
+    .lesson-tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .lesson-tab-panel { display: none; }
+    .lesson-tab-panel.active { display: block; }
+
+    .qna-section-title {
+      font-size: .9rem; font-weight: 700; color: var(--text-dim);
+      text-transform: uppercase; letter-spacing: .5px;
+      margin-bottom: 16px;
+    }
+    .qna-ask-form {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .qna-ask-form-title { font-weight: 700; margin-bottom: 14px; font-size: .95rem; }
+    .qna-question-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .qna-question-card:hover { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
+    .qna-question-card.resolved { opacity: .72; }
+    .qna-q-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+    .qna-q-avatar {
+      width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--primary-dark), #a78bfa);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .8rem; font-weight: 700; color: #fff; overflow: hidden;
+    }
+    .qna-q-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .qna-q-meta { flex: 1; }
+    .qna-q-author { font-weight: 600; font-size: .85rem; }
+    .qna-q-time { font-size: .75rem; color: var(--text-muted); margin-top: 2px; }
+    .qna-q-title { font-weight: 700; font-size: .95rem; margin-bottom: 4px; }
+    .qna-q-preview { font-size: .84rem; color: var(--text-dim); line-height: 1.5;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .qna-q-footer { display: flex; gap: 12px; align-items: center; margin-top: 10px; }
+    .badge-resolved { background: var(--success-bg); color: var(--success); border: 1px solid var(--success); }
+    .badge-unresolved { background: var(--warning-bg); color: var(--warning); border: 1px solid var(--warning); }
+
+    .qna-detail-modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.75);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 3000; padding: 24px; backdrop-filter: blur(4px);
+    }
+    .qna-detail-modal-overlay.hidden { display: none; }
+    .qna-detail-box {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 28px 32px;
+      width: 100%; max-width: 640px; max-height: 85vh;
+      overflow-y: auto; box-shadow: var(--shadow-lg);
+    }
+    .qna-detail-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; gap: 12px; }
+    .qna-detail-title { font-size: 1.05rem; font-weight: 700; line-height: 1.4; flex: 1; }
+    .qna-detail-body { font-size: .92rem; color: var(--text-dim); line-height: 1.7; white-space: pre-wrap; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+    .qna-answers-header { font-weight: 700; font-size: .9rem; margin-bottom: 12px; }
+    .qna-answer-card {
+      background: var(--bg-2); border-radius: var(--radius-sm);
+      padding: 14px 16px; margin-bottom: 10px;
+    }
+    .qna-answer-card.instructor-answer {
+      background: linear-gradient(135deg,rgba(139,92,246,.08),rgba(99,102,241,.08));
+      border: 1px solid rgba(139,92,246,.3);
+    }
+    .qna-answer-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .qna-answer-avatar {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--primary-dark), #a78bfa);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .72rem; font-weight: 700; color: #fff; overflow: hidden;
+    }
+    .qna-answer-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .qna-answer-meta { flex: 1; }
+    .qna-answer-author { font-weight: 600; font-size: .83rem; }
+    .qna-answer-time { font-size: .73rem; color: var(--text-muted); }
+    .qna-answer-body { font-size: .88rem; line-height: 1.65; color: var(--text); white-space: pre-wrap; }
+    .qna-reply-area { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+    .qna-reply-area-title { font-weight: 700; font-size: .88rem; margin-bottom: 10px; }
+    .badge-instructor { background: rgba(139,92,246,.15); color: #a78bfa; border: 1px solid rgba(139,92,246,.3); }
+
+    /* ── Video Speed Bar ── */
+    .video-speed-bar {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      padding: 10px 16px;
+      background: var(--bg-2); border-bottom: 1px solid var(--border);
+    }
+    .video-speed-label { font-size: .8rem; font-weight: 700; color: var(--text-dim); white-space: nowrap; }
+    .speed-btn {
+      padding: 4px 12px; border-radius: 100px;
+      border: 1px solid var(--border); background: none;
+      font-size: .8rem; font-weight: 600; color: var(--text-dim);
+      cursor: pointer; transition: all .15s; font-family: inherit;
+    }
+    .speed-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-glow); }
+    .speed-btn.active { border-color: var(--primary); background: var(--primary); color: #fff; }
   </style>
 </head>
 <body class="learn-page">
@@ -474,30 +589,56 @@ function renderVideo(lesson) {
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
         allowfullscreen></iframe>`;
     } else {
-      videoHtml = `<video controls src="${lesson.video_url}" style="width:100%;height:100%"></video>`;
+      videoHtml = `<video controls id="lesson-video-el" src="${lesson.video_url}" style="width:100%;height:100%"></video>`;
     }
   } else {
     videoHtml = `<div class="lesson-video-placeholder">🎬</div>`;
   }
 
+  const canQnA = isEnrolled && currentUser?.role === 'student';
+  const isYoutube = lesson.video_url && /(?:youtube\.com\/watch\?v=|youtu\.be\/)/.test(lesson.video_url);
+  const speedBarHtml = (!isYoutube && lesson.video_url) ? `
+    <div class="video-speed-bar">
+      <span class="video-speed-label">⚡ Tốc độ phát:</span>
+      ${[0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map(s =>
+        `<button class="speed-btn${s === 1 ? ' active' : ''}" onclick="setVideoSpeed(${s})">${s === 1 ? '1x (mặc định)' : s + 'x'}</button>`
+      ).join('')}
+    </div>` : '';
+
   document.getElementById('lesson-panel').innerHTML = `
     <div class="lesson-video-wrap">${videoHtml}</div>
+    ${speedBarHtml}
     ${lessonHeaderHtml(lesson, 'video')}
-    <div class="complete-area" id="complete-area">
-      ${completeOrDoneHtml(lesson.id, isCompleted)}
+    ${canQnA ? lessonTabsHtml(lesson.id) : ''}
+    <div id="tab-content-panel" class="lesson-tab-panel active">
+      <div class="complete-area" id="complete-area">
+        ${completeOrDoneHtml(lesson.id, isCompleted)}
+      </div>
+    </div>
+    <div id="tab-qna-panel" class="lesson-tab-panel">
+      ${qnaSectionHtml()}
     </div>`;
+  if (canQnA) loadQnA(lesson.id);
 }
 
 // ── Render: Content ──────────────────────────────────────
 function renderContent(lesson) {
   const isCompleted = lesson.progress?.is_completed ?? false;
   const body = lesson.content_body || lesson.content || '';
+  const canQnA = isEnrolled && currentUser?.role === 'student';
   document.getElementById('lesson-panel').innerHTML = `
     ${lessonHeaderHtml(lesson, 'content')}
-    <div class="content-body">${body || '<p style="color:var(--text-dim)">Bài học này chưa có nội dung.</p>'}</div>
-    <div class="complete-area" id="complete-area">
-      ${completeOrDoneHtml(lesson.id, isCompleted)}
+    ${canQnA ? lessonTabsHtml(lesson.id) : ''}
+    <div id="tab-content-panel" class="lesson-tab-panel active">
+      <div class="content-body">${body || '<p style="color:var(--text-dim)">Bài học này chưa có nội dung.</p>'}</div>
+      <div class="complete-area" id="complete-area">
+        ${completeOrDoneHtml(lesson.id, isCompleted)}
+      </div>
+    </div>
+    <div id="tab-qna-panel" class="lesson-tab-panel">
+      ${qnaSectionHtml()}
     </div>`;
+  if (canQnA) loadQnA(lesson.id);
 }
 
 // ── Render: Quiz ─────────────────────────────────────────
@@ -524,15 +665,23 @@ function renderQuiz(lesson) {
     </div>`;
   }).join('');
 
+  const canQnA = isEnrolled && currentUser?.role === 'student';
   document.getElementById('lesson-panel').innerHTML = `
     ${lessonHeaderHtml(lesson, 'quiz')}
-    <div class="quiz-wrap" id="quiz-wrap">${questionsHtml}</div>
-    <div class="quiz-submit-area" style="margin-top:20px">
-      <button class="btn btn-warning" id="btn-submit-quiz" onclick="submitQuiz(${lesson.id})">
-        📤 Nộp bài
-      </button>
+    ${canQnA ? lessonTabsHtml(lesson.id) : ''}
+    <div id="tab-content-panel" class="lesson-tab-panel active">
+      <div class="quiz-wrap" id="quiz-wrap">${questionsHtml}</div>
+      <div class="quiz-submit-area" style="margin-top:20px">
+        <button class="btn btn-warning" id="btn-submit-quiz" onclick="submitQuiz(${lesson.id})">
+          📤 Nộp bài
+        </button>
+      </div>
+      <div id="quiz-result" style="display:none;margin-top:20px"></div>
     </div>
-    <div id="quiz-result" style="display:none;margin-top:20px"></div>`;
+    <div id="tab-qna-panel" class="lesson-tab-panel">
+      ${qnaSectionHtml()}
+    </div>`;
+  if (canQnA) loadQnA(lesson.id);
 }
 
 async function submitQuiz(lessonId) {
@@ -614,6 +763,296 @@ function lessonHeaderHtml(lesson, type) {
     </div>`;
 }
 
+function lessonTabsHtml(lessonId) {
+  return `
+    <div class="lesson-tabs">
+      <button class="lesson-tab-btn active" id="tab-btn-content" onclick="switchLessonTab('content', ${lessonId})">📖 Nội dung</button>
+      <button class="lesson-tab-btn" id="tab-btn-qna" onclick="switchLessonTab('qna', ${lessonId})">💬 Hỏi &amp; Đáp</button>
+    </div>`;
+}
+
+function qnaSectionHtml() {
+  return `
+    <div class="qna-ask-form" id="qna-ask-form">
+      <div class="qna-ask-form-title">🙋 Đặt câu hỏi về bài học</div>
+      <div class="form-group">
+        <input type="text" id="qna-title-input" class="form-control" placeholder="Tiêu đề câu hỏi..." maxlength="200">
+      </div>
+      <div class="form-group" style="margin-top:10px">
+        <textarea id="qna-content-input" class="form-control" placeholder="Mô tả chi tiết câu hỏi của bạn..." style="min-height:90px"></textarea>
+      </div>
+      <button class="btn btn-primary btn-sm" id="btn-ask-question" onclick="submitAskQuestion()" style="margin-top:8px">📤 Gửi câu hỏi</button>
+    </div>
+    <div id="qna-list-container">
+      <div class="empty-state" style="padding:24px 0"><div class="spinner-ring"></div></div>
+    </div>
+    <div id="qna-pagination" style="margin-top:16px"></div>`;
+}
+
+function switchLessonTab(tab, lessonId) {
+  const contentPanel = document.getElementById('tab-content-panel');
+  const qnaPanel     = document.getElementById('tab-qna-panel');
+  const btnContent   = document.getElementById('tab-btn-content');
+  const btnQnA       = document.getElementById('tab-btn-qna');
+  if (!contentPanel || !qnaPanel) return;
+  if (tab === 'content') {
+    contentPanel.classList.add('active');
+    qnaPanel.classList.remove('active');
+    btnContent.classList.add('active');
+    btnQnA.classList.remove('active');
+  } else {
+    qnaPanel.classList.add('active');
+    contentPanel.classList.remove('active');
+    btnQnA.classList.add('active');
+    btnContent.classList.remove('active');
+    if (!qnaPanel.dataset.loaded) loadQnA(lessonId);
+  }
+}
+
+// ── Q&A State ─────────────────────────────────────────────
+let qnaCurrentLessonId = null;
+let qnaPage = 1;
+let qnaTotalPages = 1;
+let qnaOpenQuestionId = null;
+
+function qnaTimeAgo(dateStr) {
+  const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
+  if (diff < 60) return 'vừa xong';
+  if (diff < 3600) return `${Math.floor(diff/60)} phút trước`;
+  if (diff < 86400) return `${Math.floor(diff/3600)} giờ trước`;
+  return `${Math.floor(diff/86400)} ngày trước`;
+}
+
+function qnaEsc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function qnaAvatar(user, size = 32) {
+  if (user?.avatar) {
+    return `<div class="qna-q-avatar" style="width:${size}px;height:${size}px"><img src="${qnaEsc(user.avatar)}" alt="" onerror="this.parentElement.textContent='${(user.full_name||'?').charAt(0).toUpperCase()}'"></div>`;
+  }
+  return `<div class="qna-q-avatar" style="width:${size}px;height:${size}px">${(user?.full_name||'?').charAt(0).toUpperCase()}</div>`;
+}
+
+// ── Load Q&A list ─────────────────────────────────────────
+async function loadQnA(lessonId, page = 1) {
+  qnaCurrentLessonId = lessonId;
+  qnaPage = page;
+  const container = document.getElementById('qna-list-container');
+  if (!container) return;
+
+  const panel = document.getElementById('tab-qna-panel');
+  if (panel) panel.dataset.loaded = '1';
+
+  container.innerHTML = `<div class="empty-state" style="padding:24px 0"><div class="spinner-ring"></div></div>`;
+
+  const { ok, data } = await apiFetch(`/lessons/${lessonId}/questions?page=${page}&limit=10`);
+  if (!ok) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">😕</div><p class="empty-text">Không thể tải câu hỏi.</p></div>`;
+    return;
+  }
+
+  const questions = data.data?.questions ?? data.data ?? [];
+  qnaTotalPages = data.data?.totalPages ?? 1;
+
+  if (!questions.length) {
+    container.innerHTML = `<div class="empty-state" style="padding:32px 0"><div class="empty-icon">📭</div><p class="empty-text">Chưa có câu hỏi nào. Hãy là người đầu tiên đặt câu hỏi!</p></div>`;
+    renderQnAPagination(lessonId);
+    return;
+  }
+
+  container.innerHTML = questions.map(q => {
+    const resolved = q.is_resolved;
+    const cnt = q.answers_count ?? 0;
+    return `<div class="qna-question-card${resolved ? ' resolved' : ''}" onclick="openQnADetail(${q.id})">
+      <div class="qna-q-header">
+        ${qnaAvatar(q.user, 32)}
+        <div class="qna-q-meta">
+          <div class="qna-q-author">${qnaEsc(q.user?.full_name || '—')}</div>
+          <div class="qna-q-time">${qnaTimeAgo(q.created_at)}</div>
+        </div>
+        ${resolved ? '<span class="badge badge-resolved">✅ Đã giải quyết</span>' : `<span class="badge badge-unresolved">💬 ${cnt} trả lời</span>`}
+      </div>
+      <div class="qna-q-title">${qnaEsc(q.title)}</div>
+      <div class="qna-q-preview">${qnaEsc(q.content)}</div>
+      <div class="qna-q-footer">
+        ${currentUser && q.user?.id === currentUser.id ? `<button class="btn btn-sm btn-ghost" style="padding:2px 8px;font-size:.75rem" onclick="event.stopPropagation();deleteQuestion(${q.id})">🗑 Xóa</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  renderQnAPagination(lessonId);
+}
+
+function renderQnAPagination(lessonId) {
+  const pag = document.getElementById('qna-pagination');
+  if (!pag || qnaTotalPages <= 1) { if (pag) pag.innerHTML = ''; return; }
+  pag.innerHTML = `
+    <button class="btn btn-outline btn-sm" onclick="loadQnA(${lessonId}, ${qnaPage-1})" ${qnaPage===1?'disabled':''}>← Trước</button>
+    <span class="page-info" style="font-size:.8rem">Trang ${qnaPage} / ${qnaTotalPages}</span>
+    <button class="btn btn-outline btn-sm" onclick="loadQnA(${lessonId}, ${qnaPage+1})" ${qnaPage===qnaTotalPages?'disabled':''}>Sau →</button>`;
+}
+
+// ── Submit new question ───────────────────────────────────
+async function submitAskQuestion() {
+  const title   = document.getElementById('qna-title-input')?.value.trim();
+  const content = document.getElementById('qna-content-input')?.value.trim();
+  if (!title) { showToast('Vui lòng nhập tiêu đề câu hỏi', 'error'); return; }
+  if (!content) { showToast('Vui lòng nhập nội dung câu hỏi', 'error'); return; }
+
+  const btn = document.getElementById('btn-ask-question');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span> Đang gửi...';
+
+  const { ok, data } = await apiFetch(`/lessons/${qnaCurrentLessonId}/questions`, {
+    method: 'POST',
+    body: JSON.stringify({ title, content }),
+  });
+
+  btn.disabled = false; btn.textContent = '📤 Gửi câu hỏi';
+  if (!ok) { showToast(data.message || 'Gửi câu hỏi thất bại', 'error'); return; }
+
+  showToast('Đã gửi câu hỏi ✅', 'success');
+  document.getElementById('qna-title-input').value = '';
+  document.getElementById('qna-content-input').value = '';
+  loadQnA(qnaCurrentLessonId, 1);
+}
+
+// ── Delete question ───────────────────────────────────────
+async function deleteQuestion(qId) {
+  if (!confirm('Xóa câu hỏi này?')) return;
+  const { ok, data } = await apiFetch(`/questions/${qId}`, { method: 'DELETE' });
+  if (!ok) { showToast(data.message || 'Xóa thất bại', 'error'); return; }
+  showToast('Đã xóa câu hỏi', 'success');
+  loadQnA(qnaCurrentLessonId, qnaPage);
+}
+
+// ── Open Q&A detail modal ─────────────────────────────────
+async function openQnADetail(questionId) {
+  qnaOpenQuestionId = questionId;
+  // Create modal if not exist
+  let modal = document.getElementById('qna-detail-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'qna-detail-modal';
+    modal.className = 'qna-detail-modal-overlay';
+    modal.innerHTML = `
+      <div class="qna-detail-box" id="qna-detail-inner">
+        <div style="text-align:center;padding:24px"><div class="spinner-ring"></div></div>
+      </div>`;
+    modal.addEventListener('click', e => { if (e.target === modal) closeQnADetail(); });
+    document.body.appendChild(modal);
+    document.addEventListener('keydown', function escQnA(e) { if (e.key === 'Escape') closeQnADetail(); });
+  } else {
+    modal.classList.remove('hidden');
+    document.getElementById('qna-detail-inner').innerHTML = `<div style="text-align:center;padding:24px"><div class="spinner-ring"></div></div>`;
+  }
+
+  const { ok, data } = await apiFetch(`/questions/${questionId}`);
+  if (!ok) {
+    document.getElementById('qna-detail-inner').innerHTML = `<p style="color:var(--danger);padding:24px">Không thể tải câu hỏi.</p>`;
+    return;
+  }
+
+  renderQnADetail(data.data);
+}
+
+function renderQnADetail(q) {
+  const isOwner  = currentUser && q.user?.id === currentUser.id;
+  const answers  = q.answers || [];
+  const canResolve = !q.is_resolved && isOwner;
+
+  let answersHtml = `<div class="qna-answers-header">💬 ${answers.length} câu trả lời</div>`;
+  if (!answers.length) {
+    answersHtml += `<div class="empty-state" style="padding:16px 0"><p class="empty-text">Chưa có câu trả lời nào.</p></div>`;
+  } else {
+    answersHtml += answers.map(a => {
+      const isInst = a.is_instructor_answer;
+      const canDelA = currentUser && (a.user?.id === currentUser.id);
+      return `<div class="qna-answer-card${isInst ? ' instructor-answer' : ''}">
+        <div class="qna-answer-header">
+          <div class="qna-answer-avatar">${a.user?.avatar ? `<img src="${qnaEsc(a.user.avatar)}" alt="">` : (a.user?.full_name||'?').charAt(0).toUpperCase()}</div>
+          <div class="qna-answer-meta">
+            <div class="qna-answer-author">${qnaEsc(a.user?.full_name || '—')} ${isInst ? '<span class="badge badge-instructor">⭐ Giảng viên</span>' : ''}</div>
+            <div class="qna-answer-time">${qnaTimeAgo(a.created_at)}</div>
+          </div>
+          ${canDelA ? `<button class="btn btn-sm btn-ghost" style="padding:2px 8px;font-size:.75rem;color:var(--danger)" onclick="deleteAnswer(${a.id})">🗑</button>` : ''}
+        </div>
+        <div class="qna-answer-body">${qnaEsc(a.content || a.body || '')}</div>
+      </div>`;
+    }).join('');
+  }
+
+  const replyArea = `
+    <div class="qna-reply-area">
+      <div class="qna-reply-area-title">✏️ Viết câu trả lời</div>
+      <textarea id="qna-reply-input" class="form-control" placeholder="Nhập câu trả lời..." style="min-height:80px"></textarea>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" id="btn-submit-reply" onclick="submitQnAReply(${q.id})">📤 Gửi trả lời</button>
+        ${canResolve ? `<button class="btn btn-success btn-sm" onclick="resolveQuestion(${q.id})">✅ Đánh dấu đã giải quyết</button>` : ''}
+        <button class="btn btn-ghost btn-sm" onclick="closeQnADetail()">Đóng</button>
+      </div>
+    </div>`;
+
+  document.getElementById('qna-detail-inner').innerHTML = `
+    <div class="qna-detail-header">
+      <div class="qna-detail-title">${qnaEsc(q.title)}</div>
+      <button class="modal-close" onclick="closeQnADetail()">✕</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      ${qnaAvatar(q.user, 28)}
+      <span style="font-size:.84rem;font-weight:600">${qnaEsc(q.user?.full_name||'—')}</span>
+      <span style="font-size:.75rem;color:var(--text-muted)">${qnaTimeAgo(q.created_at)}</span>
+      ${q.is_resolved ? '<span class="badge badge-resolved">✅ Đã giải quyết</span>' : ''}
+    </div>
+    <div class="qna-detail-body">${qnaEsc(q.content || q.body || '')}</div>
+    ${answersHtml}
+    ${replyArea}`;
+}
+
+function closeQnADetail() {
+  const modal = document.getElementById('qna-detail-modal');
+  if (modal) modal.classList.add('hidden');
+  qnaOpenQuestionId = null;
+}
+
+async function submitQnAReply(questionId) {
+  const content = document.getElementById('qna-reply-input')?.value.trim();
+  if (!content) { showToast('Vui lòng nhập nội dung câu trả lời', 'error'); return; }
+
+  const btn = document.getElementById('btn-submit-reply');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span> Đang gửi...';
+
+  const { ok, data } = await apiFetch(`/questions/${questionId}/answers`, {
+    method: 'POST',
+    body: JSON.stringify({ content }),
+  });
+
+  btn.disabled = false; btn.textContent = '📤 Gửi trả lời';
+  if (!ok) { showToast(data.message || 'Gửi thất bại', 'error'); return; }
+
+  showToast('Đã gửi câu trả lời ✅', 'success');
+  openQnADetail(questionId);
+  loadQnA(qnaCurrentLessonId, qnaPage);
+}
+
+async function resolveQuestion(questionId) {
+  const { ok, data } = await apiFetch(`/questions/${questionId}/resolve`, { method: 'PUT' });
+  if (!ok) { showToast(data.message || 'Lỗi', 'error'); return; }
+  showToast('Đã đánh dấu đã giải quyết ✅', 'success');
+  openQnADetail(questionId);
+  loadQnA(qnaCurrentLessonId, qnaPage);
+}
+
+async function deleteAnswer(answerId) {
+  if (!confirm('Xóa câu trả lời này?')) return;
+  const { ok, data } = await apiFetch(`/answers/${answerId}`, { method: 'DELETE' });
+  if (!ok) { showToast(data.message || 'Xóa thất bại', 'error'); return; }
+  showToast('Đã xóa câu trả lời', 'success');
+  openQnADetail(qnaOpenQuestionId);
+  loadQnA(qnaCurrentLessonId, qnaPage);
+}
+
+
 function completeOrDoneHtml(lessonId, isCompleted) {
   if (currentUser?.role !== 'student' || !isEnrolled) return '';
   if (isCompleted) {
@@ -622,6 +1061,17 @@ function completeOrDoneHtml(lessonId, isCompleted) {
   return `<button class="btn btn-success" id="btn-complete-${lessonId}" onclick="markComplete(${lessonId})">
     ✅ Đánh dấu hoàn thành
   </button>`;
+}
+
+// ── Video Speed Control ───────────────────────────────────
+function setVideoSpeed(speed) {
+  const video = document.getElementById('lesson-video-el');
+  if (video) video.playbackRate = speed;
+  // Update active button
+  document.querySelectorAll('.speed-btn').forEach(btn => {
+    btn.classList.toggle('active', parseFloat(btn.textContent) === speed ||
+      (speed === 1 && btn.textContent.startsWith('1x')));
+  });
 }
 
 async function markComplete(lessonId) {

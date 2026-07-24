@@ -108,14 +108,14 @@ function getLessonQuestions(req, res) {
       });
     }
 
-    const page    = Math.max(1, parseInt(req.query.page)  || 1);
-    const limit   = Math.max(1, parseInt(req.query.limit) || 10);
-    const offset  = (page - 1) * limit;
-    const search  = req.query.search ? `%${req.query.search.trim()}%` : null;
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.max(1, parseInt(req.query.limit) || 10);
+    const offset = (page - 1) * limit;
+    const search = req.query.search ? `%${req.query.search.trim()}%` : null;
 
     // Xây điều kiện tìm kiếm
     const conditions = ['q.lesson_id = ?'];
-    const params     = [lessonId];
+    const params = [lessonId];
 
     if (search) {
       conditions.push('(q.title LIKE ? OR q.content LIKE ?)');
@@ -149,16 +149,16 @@ function getLessonQuestions(req, res) {
     `).all(...params, limit, offset);
 
     const questions = rows.map((row) => ({
-      id:          row.id,
-      title:       row.title,
-      content:     row.content,
+      id: row.id,
+      title: row.title,
+      content: row.content,
       is_resolved: row.is_resolved,
-      created_at:  row.created_at,
+      created_at: row.created_at,
       answers_count: row.answers_count,
       user: {
-        id:        row.user_id,
+        id: row.user_id,
         full_name: row.user_full_name,
-        avatar:    row.user_avatar,
+        avatar: row.user_avatar,
       },
     }));
 
@@ -216,30 +216,30 @@ function getQuestion(req, res) {
     `).all(questionId);
 
     const answers = answerRows.map((row) => ({
-      id:                  row.id,
-      content:             row.content,
+      id: row.id,
+      content: row.content,
       is_instructor_answer: row.is_instructor_answer,
-      created_at:          row.created_at,
+      created_at: row.created_at,
       user: {
-        id:        row.user_id,
+        id: row.user_id,
         full_name: row.user_full_name,
-        avatar:    row.user_avatar,
-        role:      row.user_role,
+        avatar: row.user_avatar,
+        role: row.user_role,
       },
     }));
 
     return res.status(200).json({
       success: true,
       data: {
-        id:          question.id,
-        title:       question.title,
-        content:     question.content,
+        id: question.id,
+        title: question.title,
+        content: question.content,
         is_resolved: question.is_resolved,
-        created_at:  question.created_at,
+        created_at: question.created_at,
         user: {
-          id:        asker.id,
+          id: asker.id,
           full_name: asker.full_name,
-          avatar:    asker.avatar,
+          avatar: asker.avatar,
         },
         answers,
       },
@@ -254,7 +254,8 @@ function getQuestion(req, res) {
 function createAnswer(req, res) {
   try {
     const questionId = parseInt(req.params.id);
-    const { content } = req.body;
+    const { content, body } = req.body;
+    const actualContent = content || body;
 
     // Kiểm tra câu hỏi tồn tại
     const question = getQuestionOrFail(questionId, res);
@@ -289,7 +290,7 @@ function createAnswer(req, res) {
     // admin: không hạn chế
 
     // Kiểm tra nội dung
-    if (!content || !content.trim()) {
+    if (!actualContent || !actualContent.trim()) {
       return res.status(400).json({
         success: false,
         message: 'Vui lòng nhập nội dung câu trả lời',
@@ -312,7 +313,7 @@ function createAnswer(req, res) {
         INSERT INTO lesson_answers (question_id, user_id, content, is_instructor_answer)
         VALUES (?, ?, ?, ?)
       `)
-      .run(questionId, user.id, content.trim(), isInstructorAnswer);
+      .run(questionId, user.id, actualContent.trim(), isInstructorAnswer);
 
     const newAnswer = db
       .prepare('SELECT id, content, is_instructor_answer, created_at FROM lesson_answers WHERE id = ?')

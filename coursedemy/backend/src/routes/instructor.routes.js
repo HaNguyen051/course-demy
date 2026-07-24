@@ -9,6 +9,7 @@ const {
   updateCourse,
   deleteCourse,
   getCourseStudents,
+  getInstructorAllStudents,
   createWithdrawal,
   getWithdrawals,
   getInstructorQuestions,
@@ -45,6 +46,10 @@ router.get('/withdrawals', getWithdrawals);
 // ── Q&A Inbox ────────────────────────────────────────────────────────────────────────────
 // GET  /api/instructor/questions — hộp thư Q&A của giảng viên
 router.get('/questions', getInstructorQuestions);
+
+// ── Thống kê học viên ──────────────────────────────────────────────────────────────────────
+// GET  /api/instructor/students — tổng hợp học viên tất cả khóa học
+router.get('/students', getInstructorAllStudents);
 
 // ── Thống kê doanh thu ───────────────────────────────────────────────────────────────────
 // GET /api/instructor/stats/overview

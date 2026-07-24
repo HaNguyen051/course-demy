@@ -40,6 +40,36 @@
       .chart-wrap { height:200px; }
       .learn-layout { grid-template-columns:1fr; }
     }
+
+    /* ── Student Stats ── */
+    .student-filter-bar {
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+      margin-bottom:16px;
+    }
+    .student-filter-bar .search-wrap { flex:1; min-width:200px; position:relative; }
+    .student-filter-bar .search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:.9rem; }
+    .student-filter-bar .search-input { padding-left:38px !important; }
+    .stu-avatar {
+      width:36px; height:36px; border-radius:50%; flex-shrink:0;
+      background:linear-gradient(135deg,var(--primary-dark),#a78bfa);
+      display:flex; align-items:center; justify-content:center;
+      font-weight:700; font-size:.82rem; color:#fff; overflow:hidden;
+    }
+    .stu-avatar img { width:100%; height:100%; object-fit:cover; }
+    .progress-mini-track {
+      flex:1; max-width:120px; height:6px;
+      background:var(--border); border-radius:100px; overflow:hidden;
+    }
+    .progress-mini-fill {
+      height:100%;
+      background:linear-gradient(90deg,var(--primary-dark),var(--success));
+      border-radius:100px;
+      transition:width .4s ease;
+    }
+    .course-thumb-xs {
+      width:40px; height:26px; object-fit:cover;
+      border-radius:3px; flex-shrink:0; background:var(--bg-2);
+    }
   </style>
 </head>
 <body>
@@ -86,6 +116,31 @@
     <div id="courses-table-wrap">
       <div class="empty-state"><div class="spinner-ring"></div></div>
     </div>
+  </div>
+
+  <!-- ── Student Statistics ─────────────────────────────────── -->
+  <div class="chart-card">
+    <div class="chart-card-title">
+      <span>👥 Danh sách học viên</span>
+      <span id="student-count-label" style="font-size:.82rem;font-weight:400;color:var(--text-muted)"></span>
+    </div>
+
+    <div class="student-filter-bar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="stu-search" class="form-control search-input"
+          placeholder="Tìm theo tên hoặc email..." oninput="onStudentSearch()">
+      </div>
+      <select class="form-control" id="stu-course-filter" style="min-width:200px" onchange="loadStudents(1)">
+        <option value="">— Tất cả khóa học —</option>
+      </select>
+      <button class="btn btn-outline btn-sm" onclick="resetStudentFilters()">✕ Xóa lọc</button>
+    </div>
+
+    <div id="students-table-wrap">
+      <div class="empty-state"><div class="spinner-ring"></div></div>
+    </div>
+    <div id="students-pagination" style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:16px"></div>
   </div>
 </main>
 
@@ -141,7 +196,7 @@ async function loadOverview() {
     </div>
     <div class="stat-card">
       <div class="stat-icon">🏦</div>
-      <div class="stat-value" style="color:var(--success)">${fmtVND(s.wallet_balance)}</div>
+      <div class="stat-value" style="color:var(--success)">${fmtVND(s.current_balance)}</div>
       <div class="stat-label">Số dư ví</div>
     </div>`;
 }
@@ -160,9 +215,10 @@ async function loadRevenue(period = '7days') {
   const { ok, data } = await apiFetch(`/instructor/stats/revenue?period=${period}`);
   if (!ok) { showToast('Lỗi tải biểu đồ doanh thu', 'error'); return; }
 
-  const rows = data.data || [];
-  const labels = rows.map(r => r.label || r.period || r.date || '');
-  const values = rows.map(r => Number(r.revenue ?? r.total ?? 0));
+  // Backend trả về { period, labels: [...], revenue: [...] } — 2 mảng riêng
+  const d = data.data || {};
+  const labels = d.labels || (d.data || []).map(r => r.label || r.period || r.date || '');
+  const values = d.revenue || (d.data || []).map(r => Number(r.revenue ?? r.total ?? 0));
 
   const ctx = document.getElementById('revenue-chart').getContext('2d');
   if (revenueChart) revenueChart.destroy();
@@ -258,8 +314,8 @@ function renderCoursesTable() {
         <thead><tr>
           <th>Khóa học</th>
           <th>Trạng thái</th>
-          <th class="sortable-th" onclick="sortTable('students')">
-            Học viên ${sortIcon('students')}
+          <th class="sortable-th" onclick="sortTable('students_count')">
+            Học viên ${sortIcon('students_count')}
           </th>
           <th class="sortable-th" onclick="sortTable('revenue')">
             Doanh thu ${sortIcon('revenue')}
@@ -283,7 +339,7 @@ function renderCoursesTable() {
                 </div>
               </td>
               <td><span class="badge ${st.cls}">${st.label}</span></td>
-              <td style="font-weight:600">${c.students ?? 0}</td>
+              <td style="font-weight:600">${c.students_count ?? c.students ?? 0}</td>
               <td style="font-weight:700;color:var(--primary)">${fmtVND(c.revenue)}</td>
               <td style="color:var(--warning)">${fmtStar(c.avg_rating)}</td>
             </tr>`;
@@ -299,9 +355,138 @@ function sortTable(col) {
   renderCoursesTable();
 }
 
-// ── Init ─────────────────────────────────────────────────────────────────────
+// ── Student Statistics ───────────────────────────────────────────────────────────────────────────
+let studentPage = 1;
+let studentTotalPages = 1;
+let studentSearchTimeout = null;
+
+async function loadCourseFilter() {
+  const { ok, data } = await apiFetch('/instructor/courses');
+  if (!ok) return;
+  const courses = (data.data || []).filter(c => c.status === 'approved');
+  const sel = document.getElementById('stu-course-filter');
+  courses.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = c.title;
+    sel.appendChild(opt);
+  });
+}
+
+async function loadStudents(page = 1) {
+  studentPage = page;
+  const search   = document.getElementById('stu-search').value.trim();
+  const courseId = document.getElementById('stu-course-filter').value;
+
+  let qs = `?page=${page}&limit=20`;
+  if (search)   qs += `&search=${encodeURIComponent(search)}`;
+  if (courseId) qs += `&course_id=${courseId}`;
+
+  const wrap = document.getElementById('students-table-wrap');
+  wrap.innerHTML = `<div class="empty-state" style="padding:24px 0"><div class="spinner-ring"></div></div>`;
+  document.getElementById('students-pagination').innerHTML = '';
+
+  const { ok, data } = await apiFetch(`/instructor/students${qs}`);
+  if (!ok) {
+    wrap.innerHTML = `<p style="color:var(--danger)">${data.message || 'Lỗi tải dữ liệu'}</p>`;
+    return;
+  }
+
+  const students  = data.data?.students ?? [];
+  const total     = data.data?.total ?? 0;
+  studentTotalPages = data.data?.totalPages ?? 1;
+
+  document.getElementById('student-count-label').textContent =
+    `${total} lượt đăng ký${search ? ` · tìm kiếm: "${search}"` : ''}`;
+
+  if (!students.length) {
+    wrap.innerHTML = `<div class="empty-state" style="padding:32px 0"><div class="empty-icon">👥</div><p class="empty-text">Không có học viên nào phù hợp.</p></div>`;
+    return;
+  }
+
+  wrap.innerHTML = `
+    <div class="table-wrap"><table>
+      <thead><tr>
+        <th>Học viên</th>
+        <th>Email</th>
+        <th>Khóa học</th>
+        <th>Ngày đăng ký</th>
+        <th>Tiến độ</th>
+      </tr></thead>
+      <tbody>
+        ${students.map(s => {
+          const initials = (s.full_name || '?').charAt(0).toUpperCase();
+          const avatarHtml = s.avatar
+            ? `<img src="${escHtml(s.avatar)}" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0">`
+            : `<div class="stu-avatar">${initials}</div>`;
+          const thumbHtml = s.course?.thumbnail
+            ? `<img src="${escHtml(s.course.thumbnail)}" class="course-thumb-xs" alt="">`
+            : `<div class="course-thumb-xs" style="display:flex;align-items:center;justify-content:center;font-size:.9rem">📚</div>`;
+          const pct = Math.round(s.progress_percent ?? 0);
+          return `<tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:10px">
+                ${avatarHtml}
+                <div style="font-weight:600;font-size:.88rem">${escHtml(s.full_name)}</div>
+              </div>
+            </td>
+            <td style="font-size:.83rem;color:var(--text-dim)">${escHtml(s.email)}</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                ${thumbHtml}
+                <span style="font-size:.82rem;font-weight:600;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(s.course?.title || '—')}</span>
+              </div>
+            </td>
+            <td style="font-size:.82rem;color:var(--text-dim)">${formatDate(s.enrolled_at)}</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="progress-mini-track">
+                  <div class="progress-mini-fill" style="width:${pct}%"></div>
+                </div>
+                <span style="font-size:.78rem;font-weight:700;color:var(--primary);min-width:32px">${pct}%</span>
+              </div>
+            </td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table></div>`;
+
+  renderStudentPagination();
+}
+
+function renderStudentPagination() {
+  const pag = document.getElementById('students-pagination');
+  if (studentTotalPages <= 1) { pag.innerHTML = ''; return; }
+  pag.innerHTML = `
+    <button class="btn btn-outline btn-sm" onclick="loadStudents(${studentPage-1})" ${studentPage===1?'disabled':''}>← Trước</button>
+    <span class="page-info" style="font-size:.8rem">Trang ${studentPage} / ${studentTotalPages}</span>
+    <button class="btn btn-outline btn-sm" onclick="loadStudents(${studentPage+1})" ${studentPage===studentTotalPages?'disabled':''}>Sau →</button>`;
+}
+
+function onStudentSearch() {
+  clearTimeout(studentSearchTimeout);
+  studentSearchTimeout = setTimeout(() => loadStudents(1), 400);
+}
+
+function resetStudentFilters() {
+  document.getElementById('stu-search').value = '';
+  document.getElementById('stu-course-filter').value = '';
+  loadStudents(1);
+}
+
+function escHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Init ────────────────────────────────────────────────────────────────────────────────
 (async () => {
-  await Promise.all([loadOverview(), loadRevenue('7days'), loadCoursesTable()]);
+  await Promise.all([
+    loadOverview(),
+    loadRevenue('7days'),
+    loadCoursesTable(),
+    loadCourseFilter(),
+    loadStudents(1),
+  ]);
 })();
 </script>
 </body>

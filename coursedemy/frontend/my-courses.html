@@ -96,7 +96,7 @@ if (getUser()?.role !== 'student') window.location.href = '/index.html';
   el.innerHTML = `<div class="courses-grid">
     ${items.map(item => {
       const c = item.course;
-      const pct = Math.round(item.progress_percent ?? 0);
+      const pct = Math.round(item.course.progress_percent ?? item.progress_percent ?? 0);
       const isDone = pct >= 100;
       const thumb = c.thumbnail
         ? `<img src="${c.thumbnail}" alt="${c.title}" class="my-course-thumb">`

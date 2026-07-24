@@ -130,7 +130,7 @@ async function doWithdraw() {
 
   const { ok, data } = await apiFetch('/instructor/withdrawals', {
     method: 'POST',
-    body: JSON.stringify({ amount, bank_name, account_number: account_num, account_name }),
+    body: JSON.stringify({ amount, bank_name, account_number: account_num, account_holder: account_name }),
   });
 
   btn.disabled = false;
