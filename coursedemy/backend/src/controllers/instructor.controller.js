@@ -239,6 +239,15 @@ function createWithdrawal(req, res) {
       });
     }
 
+    // Kiểm tra số tiền rút tối thiểu
+    const MIN_WITHDRAWAL = 50000;
+    if (amount < MIN_WITHDRAWAL) {
+      return res.status(400).json({
+        success: false,
+        message: `Số tiền rút tối thiểu phải từ ${MIN_WITHDRAWAL.toLocaleString('vi-VN')}đ trở lên`,
+      });
+    }
+
     // Kiểm tra số dư
     const user = db.prepare('SELECT balance FROM users WHERE id = ?').get(req.user.id);
 
