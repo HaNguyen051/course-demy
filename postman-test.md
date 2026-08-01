@@ -35,6 +35,7 @@ Content-Type: application/json
   "full_name": "Nguyen Van A",
   "email": "student_test_new@gmail.com",
   "password": "password123",
+  "confirm_password": "password123",
   "role": "student"
 }
 ```
@@ -81,6 +82,7 @@ Content-Type: application/json
   "full_name": "Nguyen Van A",
   "email": "",
   "password": "password123",
+  "confirm_password": "password123",
   "role": "student"
 }
 ```
@@ -104,6 +106,7 @@ Content-Type: application/json
   "full_name": "Nguyen Van A",
   "email": "student_test@gmail.com",
   "password": "",
+  "confirm_password": "",
   "role": "student"
 }
 ```
@@ -127,6 +130,7 @@ Content-Type: application/json
   "full_name": "Nguyen Van A",
   "email": "student_test@gmail.com",
   "password": "123",
+  "confirm_password": "123",
   "role": "student"
 }
 ```
@@ -316,7 +320,7 @@ Content-Type: application/json
 * **Điều kiện tiên quyết (Preconditions):** Có tài khoản
 * **Các bước thực hiện:** Nhập email sai định dạng
 * **Dữ liệu kiểm thử:** `example@ggmai.com`
-* **Kết quả mong đợi:** Thông báo email không hợp lệ
+* **Kết quả mong đợi:** Email hoặc mật khẩu không đúng (HTTP 401) — backend login không validate format email, chỉ tìm kiếm trong DB
 
 **HTTP Request mẫu trên Postman:**
 ```http
@@ -356,9 +360,9 @@ Content-Type: application/json
 * **Tên Test Case:** Nhập sai mật khẩu liên tiếp 5 lần
 * **Độ ưu tiên:** `High`
 * **Điều kiện tiên quyết (Preconditions):** Có tài khoản
-* **Các bước thực hiện:** Nhập sai pass 5 lần liên tục
+* **Các bước thực hiện:** Nhập sai pass 5 lần liên tục (dùng Collection Runner để gửi 5 lần)
 * **Dữ liệu kiểm thử:** `Đăng nhập sai 5 lần`
-* **Kết quả mong đợi:** Tạm khóa tài khoản trong 15 phút
+* **Kết quả mong đợi:** Tạm khóa tài khoản trong **5 phút** (HTTP 423)
 
 **HTTP Request mẫu trên Postman:**
 ```http
@@ -381,6 +385,8 @@ Content-Type: application/json
 * **Dữ liệu kiểm thử:** `QuangAnh@gmail.com`
 * **Kết quả mong đợi:** Hệ thống gửi link/mã đặt lại mật khẩu về email
 
+> ⚠️ **Lưu ý:** Endpoint `POST /auth/forgot-password` **chưa được implement** trong backend. Kết quả thực tế sẽ là HTTP 404. Test case này cần backend bổ sung tính năng hoặc đánh dấu **SKIP**.
+
 **HTTP Request mẫu trên Postman:**
 ```http
 POST {{base_url}}/auth/forgot-password
@@ -399,7 +405,9 @@ Content-Type: application/json
 * **Điều kiện tiên quyết (Preconditions):** Đã chuẩn bị môi trường
 * **Các bước thực hiện:** Tích chọn "Remember me" rồi login
 * **Dữ liệu kiểm thử:** `Theo mẫu JSON`
-* **Kết quả mong đợi:** Phiên đăng nhập được lưu giữ khi tắt trình duyệt
+* **Kết quả mong đợi:** Đăng nhập thành công, token JWT trả về có thời hạn 7 ngày (HTTP 200)
+
+> ⚠️ **Lưu ý:** Backend hiện **không xử lý** field `remember_me` — JWT luôn có `expiresIn: 7d` bất kể giá trị này. Field được bỏ qua nhưng request vẫn thành công.
 
 **HTTP Request mẫu trên Postman:**
 ```http
@@ -453,7 +461,7 @@ GET {{base_url}}/courses?search=Tran%20Tien%20Dung
 * **Điều kiện tiên quyết (Preconditions):** Đã chuẩn bị môi trường
 * **Các bước thực hiện:** Tìm
 * **Dữ liệu kiểm thử:** `ABCXYZ`
-* **Kết quả mong đợi:** Thông báo không tìm thấy
+* **Kết quả mong đợi:** Trả về danh sách rỗng (HTTP 200, `data.courses = []`, `total = 0`)
 
 **HTTP Request mẫu trên Postman:**
 ```http
@@ -483,7 +491,7 @@ GET {{base_url}}/courses?search=@%23$
 * **Điều kiện tiên quyết (Preconditions):** Đã chuẩn bị môi trường
 * **Các bước thực hiện:** Nhập chuỗi cực dài
 * **Dữ liệu kiểm thử:** `Chuỗi 300 ký tự`
-* **Kết quả mong đợi:** Cắt chuỗi hoặc thông báo từ khóa quá dài
+* **Kết quả mong đợi:** Trả về danh sách rỗng (HTTP 200) hoặc kết quả khớp chữ — backend không giới hạn độ dài query string
 
 **HTTP Request mẫu trên Postman:**
 ```http
@@ -498,7 +506,7 @@ GET {{base_url}}/courses?search=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 * **Điều kiện tiên quyết (Preconditions):** Đã chuẩn bị môi trường
 * **Các bước thực hiện:** Nhập toàn dấu cách
 * **Dữ liệu kiểm thử:** `"   "`
-* **Kết quả mong đợi:** Không thực hiện tìm kiếm hoặc hiển thị toàn bộ
+* **Kết quả mong đợi:** Trả về toàn bộ khóa học (HTTP 200) — backend dùng `.trim()` nên chuỗi trắng được xử lý như không có từ khóa
 
 **HTTP Request mẫu trên Postman:**
 ```http
@@ -534,8 +542,10 @@ GET {{base_url}}/courses?category_id=1
 
 **HTTP Request mẫu trên Postman:**
 ```http
-GET {{base_url}}/courses?min_price=100000&max_price=500000
+GET {{base_url}}/courses?minPrice=100000&maxPrice=500000
 ```
+
+> **Lưu ý:** Backend dùng param `minPrice` và `maxPrice` (camelCase), không phải `min_price`/`max_price`.
 
 ---
 
@@ -566,6 +576,9 @@ GET {{base_url}}/courses?rating=4
 ```http
 GET {{base_url}}/courses?level=beginner
 ```
+
+> **Ghi chú:** Các giá trị hợp lệ cho `level`: `beginner` (Cơ bản), `intermediate` (Trung cấp), `advanced` (Nâng cao).
+
 
 ---
 
@@ -626,8 +639,10 @@ GET {{base_url}}/courses/101
 
 **HTTP Request mẫu trên Postman:**
 ```http
-GET {{base_url}}/courses/101/sections
+GET {{base_url}}/courses/1/sections
 ```
+
+> **Lưu ý:** Sử dụng `course_id` thực tế có trong DB (ví dụ: `1`). Endpoint này trả về danh sách section + lessons, bài preview sẽ có `video_url`; bài không preview (chưa mua) sẽ ẩn nội dung.
 
 ---
 
@@ -643,6 +658,8 @@ GET {{base_url}}/courses/101/sections
 ```http
 GET {{base_url}}/courses/999999
 ```
+
+> **Lưu ý:** Response thực tế là HTTP 404 JSON `{success: false, message: 'Không tìm thấy khóa học'}`, không phải trang HTML 404.
 
 ---
 
@@ -831,7 +848,7 @@ Authorization: Bearer {{token_student}}
 
 **HTTP Request mẫu trên Postman:**
 ```http
-POST {{base_url}}/coupons/apply
+POST {{base_url}}/coupons/validate
 Authorization: Bearer {{token_student}}
 Content-Type: application/json
 
@@ -840,6 +857,8 @@ Content-Type: application/json
   "order_amount": 500000
 }
 ```
+
+> **Lưu ý:** Endpoint đúng là `/coupons/validate`, không phải `/coupons/apply`.
 
 ---
 
@@ -853,7 +872,7 @@ Content-Type: application/json
 
 **HTTP Request mẫu trên Postman:**
 ```http
-POST {{base_url}}/coupons/apply
+POST {{base_url}}/coupons/validate
 Authorization: Bearer {{token_student}}
 Content-Type: application/json
 
@@ -875,7 +894,7 @@ Content-Type: application/json
 
 **HTTP Request mẫu trên Postman:**
 ```http
-POST {{base_url}}/coupons/apply
+POST {{base_url}}/coupons/validate
 Authorization: Bearer {{token_student}}
 Content-Type: application/json
 
@@ -897,7 +916,7 @@ Content-Type: application/json
 
 **HTTP Request mẫu trên Postman:**
 ```http
-POST {{base_url}}/coupons/apply
+POST {{base_url}}/coupons/validate
 Authorization: Bearer {{token_student}}
 Content-Type: application/json
 
@@ -919,12 +938,15 @@ Content-Type: application/json
 
 **HTTP Request mẫu trên Postman:**
 ```http
-POST {{base_url}}/coupons/remove
+POST {{base_url}}/coupons/validate
 Authorization: Bearer {{token_student}}
 Content-Type: application/json
 
 {}
 ```
+
+> ⚠️ **Lưu ý:** Endpoint `POST /coupons/remove` **không tồn tại** trong backend. Hủy áp dụng coupon là tính năng frontend-only — chỉ cần xóa `coupon_code` khỏi state, không gọi API. Test case này nên đánh dấu **SKIP**.
+
 
 ---
 
@@ -940,15 +962,16 @@ Content-Type: application/json
 
 **HTTP Request mẫu trên Postman:**
 ```http
-POST {{base_url}}/payments/checkout
+POST {{base_url}}/payments/momo/create
 Authorization: Bearer {{token_student}}
 Content-Type: application/json
 
 {
-  "payment_method": "momo",
-  "cart_items": [101]
+  "coupon_code": null
 }
 ```
+
+> **Lưu ý:** Backend không có `/payments/checkout`. Để thanh toán Momo dùng `POST /payments/momo/create`. Kết quả trả về `payUrl` — mở URL đó để quét mã.
 
 ---
 
@@ -962,9 +985,10 @@ Content-Type: application/json
 
 **HTTP Request mẫu trên Postman:**
 ```http
-GET {{base_url}}/payments/momo-return?resultCode=1006
-Authorization: Bearer {{token_student}}
+GET {{base_url}}/payments/momo/return?resultCode=1006
 ```
+
+> **Lưu ý:** Endpoint này public, không cần Authorization. Đây là callback MoMo redirect về — không cần Bearer token.
 
 ---
 
@@ -978,16 +1002,16 @@ Authorization: Bearer {{token_student}}
 
 **HTTP Request mẫu trên Postman:**
 ```http
-POST {{base_url}}/payments/checkout
+POST {{base_url}}/payments/demo/pay
 Authorization: Bearer {{token_student}}
 Content-Type: application/json
 
 {
-  "payment_method": "demo",
-  "coupon_code": "DISCOUNT100",
-  "cart_items": [101]
+  "coupon_code": "DISCOUNT100"
 }
 ```
+
+> **Lưu ý:** Backend không có `/payments/checkout`. Dùng `POST /payments/demo/pay` để test nhanh không qua cổng thanh toán. `cart_items` được lấy tự động từ giỏ hàng hiện tại.
 
 ---
 
@@ -1105,10 +1129,11 @@ Content-Type: application/json
 {
   "answers": [
     { "question_id": 1, "selected_index": 0 }
-  ],
-  "timeout": true
+  ]
 }
 ```
+
+> **Lưu ý:** Backend **không xử lý** field `timeout`. Tính năng tự nộp khi hết giờ là frontend-only — frontend tự gọi API này khi đồng hồ về 0.
 
 ---
 
@@ -1226,7 +1251,7 @@ Content-Type: application/json
 
 **HTTP Request mẫu trên Postman:**
 ```http
-PUT {{base_url}}/courses/1/reviews
+PUT {{base_url}}/courses/1/reviews/{{review_id}}
 Authorization: Bearer {{token_student}}
 Content-Type: application/json
 
@@ -1235,6 +1260,9 @@ Content-Type: application/json
   "comment": "Cập nhật bình luận khóa học tốt."
 }
 ```
+
+> **Lưu ý:** `{{review_id}}` là `id` của review trả về từ TC061 (POST tạo review). Lưu giá trị này vào biến môi trường Postman sau bước TC061.
+
 
 ---
 
@@ -1356,14 +1384,20 @@ Content-Type: application/json
 
 **HTTP Request mẫu trên Postman:**
 ```http
-POST {{base_url}}/instructor/courses/1/video
+POST {{base_url}}/instructor/sections/1/lessons
 Authorization: Bearer {{token_instructor}}
 Content-Type: application/json
 
 {
-  "video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+  "title": "Bài học video Python",
+  "type": "video",
+  "video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  "duration_seconds": 600,
+  "is_preview": 0
 }
 ```
+
+> **Lưu ý:** Backend không có endpoint `/instructor/courses/:id/video`. Để thêm video dùng `POST /instructor/sections/:sectionId/lessons` với field `video_url`.
 
 ---
 
@@ -1377,14 +1411,18 @@ Content-Type: application/json
 
 **HTTP Request mẫu trên Postman:**
 ```http
-POST {{base_url}}/instructor/courses/1/video
+POST {{base_url}}/instructor/sections/1/lessons
 Authorization: Bearer {{token_instructor}}
 Content-Type: application/json
 
 {
+  "title": "Bài học test",
+  "type": "video",
   "video_url": "invalid_file_format.xyz"
 }
 ```
+
+> **Lưu ý:** Backend không validate format `video_url`. Kết quả thực tế: HTTP 201 (tạo thành công). Expected result cần cập nhật: “Tạo lesson thành công (backend không reject URL sai)”.
 
 ---
 
@@ -1398,18 +1436,18 @@ Content-Type: application/json
 
 **HTTP Request mẫu trên Postman:**
 ```http
-POST {{base_url}}/instructor/lessons/1/questions
+POST {{base_url}}/instructor/lessons/1/quiz-questions
 Authorization: Bearer {{token_instructor}}
 Content-Type: application/json
 
 {
   "question_text": "Python là ngôn ngữ biên dịch hay thông dịch?",
-  "options": [
-    { "option_text": "Thông dịch", "is_correct": true },
-    { "option_text": "Biên dịch", "is_correct": false }
-  ]
+  "options": ["Thông dịch", "Biên dịch", "Cả hai", "Không phải cả hai"],
+  "correct_index": 0
 }
 ```
+
+> **Lưu ý:** Backend dùng `options` là mảng chuỗi và `correct_index` (số nguyên), không phải array object `{option_text, is_correct}`.
 
 ---
 
@@ -1516,9 +1554,11 @@ Content-Type: application/json
 
 **HTTP Request mẫu trên Postman:**
 ```http
-GET {{base_url}}/instructor/stats/revenue?period=12months
+GET {{base_url}}/instructor/stats/revenue?period=30days
 Authorization: Bearer {{token_instructor}}
 ```
+
+> **Lưu ý:** Giá trị hợp lệ cho `period`: `7days`, `30days`, `12months`.
 
 ---
 
@@ -1651,11 +1691,15 @@ Content-Type: application/json
 
 {
   "code": "ALLSAN20",
-  "discount_percent": 20,
+  "discount_type": "percent",
+  "discount_value": 20,
   "min_order_amount": 0,
-  "expires_at": "2026-12-31"
+  "valid_from": "2026-01-01T00:00:00Z",
+  "valid_to": "2026-12-31T23:59:59Z"
 }
 ```
+
+> **Lưu ý:** Backend yêu cầu `discount_type` (`percent`/`fixed`), `discount_value`, `valid_from`, `valid_to` (ISO 8601). Không có field `discount_percent` hay `expires_at`.
 
 ---
 
@@ -1706,9 +1750,11 @@ Content-Type: application/json
 
 **HTTP Request mẫu trên Postman:**
 ```http
-GET {{base_url}}/admin/stats
+GET {{base_url}}/admin/stats/overview
 Authorization: Bearer {{token_admin}}
 ```
+
+> **Lưu ý:** Endpoint đúng là `/admin/stats/overview`. Không có route `/admin/stats`.
 
 ---
 
@@ -1851,5 +1897,9 @@ Authorization: Bearer {{token_student}}
 POST {{base_url}}/auth/logout
 Authorization: Bearer {{token_student}}
 ```
+
+> **Lưu ý:** Chức năng logout **có tồn tại** ở frontend (`logout()` trong `api.js`) nhưng **không gọi API** — chỉ xóa token khỏi `localStorage` rồi redirect về trang chủ. Backend dùng JWT stateless nên không có endpoint logout.
+>
+> **Cách test trong Postman:** Xóa giá trị biến `{{token_student}}` trong Environment → thực hiện một request cần auth → kết quả mong đợi: HTTP 401 Unauthorized.
 
 ---

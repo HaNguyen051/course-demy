@@ -124,4 +124,54 @@ function getCourseReviews(req, res) {
   }
 }
 
-module.exports = { createReview, getCourseReviews };
+// ─── PUT /api/courses/:id/reviews/:reviewId ─────────────────────────────────
+function updateReview(req, res) {
+  try {
+    const courseId  = req.params.id;
+    const reviewId  = req.params.reviewId;
+    const userId    = req.user.id;
+    const { rating, comment } = req.body;
+
+    // Kiểm tra rating hợp lệ
+    if (rating === undefined || rating === null) {
+      return res.status(400).json({ success: false, message: 'rating là bắt buộc' });
+    }
+    const ratingNum = parseInt(rating);
+    if (isNaN(ratingNum) || ratingNum < 1 || ratingNum > 5) {
+      return res.status(400).json({
+        success: false,
+        message: 'Số sao đánh giá phải từ 1 đến 5',
+      });
+    }
+
+    // Kiểm tra review tồn tại và thuộc về user + course
+    const existing = db
+      .prepare('SELECT id FROM reviews WHERE id = ? AND user_id = ? AND course_id = ?')
+      .get(reviewId, userId, courseId);
+    if (!existing) {
+      return res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy đánh giá hoặc bạn không có quyền sửa',
+      });
+    }
+
+    // Cập nhật
+    db.prepare('UPDATE reviews SET rating = ?, comment = ? WHERE id = ?')
+      .run(ratingNum, comment || null, reviewId);
+
+    const updated = db
+      .prepare('SELECT id, rating, comment, created_at FROM reviews WHERE id = ?')
+      .get(reviewId);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Cập nhật đánh giá thành công',
+      data: updated,
+    });
+  } catch (err) {
+    console.error('[updateReview]', err);
+    return res.status(500).json({ success: false, message: 'Lỗi server' });
+  }
+}
+
+module.exports = { createReview, getCourseReviews, updateReview };

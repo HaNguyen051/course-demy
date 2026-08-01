@@ -25,6 +25,7 @@ function getCourses(req, res) {
       category_id,
       minPrice,
       maxPrice,
+      level,
       page = 1,
       limit = 10,
     } = req.query;
@@ -53,9 +54,14 @@ function getCourses(req, res) {
     }
 
     if (search && search.trim()) {
-      conditions.push('(c.title LIKE ? OR c.description LIKE ?)');
+      conditions.push('(c.title LIKE ? OR c.description LIKE ? OR u.full_name LIKE ?)');
       const keyword = `%${search.trim()}%`;
-      params.push(keyword, keyword);
+      params.push(keyword, keyword, keyword);
+    }
+
+    if (level && level.trim()) {
+      conditions.push('c.level = ?');
+      params.push(level.trim());
     }
 
     const whereClause = `WHERE ${conditions.join(' AND ')}`;
@@ -70,6 +76,7 @@ function getCourses(req, res) {
       SELECT COUNT(*) AS total FROM (
         SELECT c.id
         FROM courses c
+        LEFT JOIN users u   ON c.instructor_id = u.id
         LEFT JOIN reviews rv ON rv.course_id = c.id
         ${whereClause}
         GROUP BY c.id
@@ -85,6 +92,7 @@ function getCourses(req, res) {
         c.title,
         c.description,
         c.price,
+        c.level,
         c.thumbnail,
         c.status,
         c.created_at,
@@ -112,6 +120,7 @@ function getCourses(req, res) {
       title:         row.title,
       description:   row.description,
       price:         row.price,
+      level:         row.level,
       thumbnail:     row.thumbnail,
       status:        row.status,
       created_at:    row.created_at,

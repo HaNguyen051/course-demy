@@ -1,6 +1,12 @@
 const db  = require('../config/database');
 const PDFDocument = require('pdfkit');
 const crypto = require('crypto');
+const path   = require('path');
+
+// ─── Đường dẫn font hỗ trợ tiếng Việt (Unicode) ─────────────────────────────
+const FONT_REGULAR     = path.join(__dirname, '../assets/fonts/Arial.ttf');
+const FONT_BOLD        = path.join(__dirname, '../assets/fonts/Arial-Bold.ttf');
+const FONT_BOLD_ITALIC = path.join(__dirname, '../assets/fonts/Arial-BoldItalic.ttf');
 
 // ─── Helper: sinh certificate_code duy nhất ──────────────────────────────────
 function generateCertificateCode(courseId, userId) {
@@ -121,7 +127,7 @@ function downloadCertificate(req, res) {
     doc.moveDown(0);
     doc.fontSize(14)
        .fillColor('#1a56db')
-       .font('Helvetica-Bold')
+       .font(FONT_BOLD)
        .text('CourseDemy', { align: 'center' });
 
     doc.moveDown(0.3);
@@ -135,60 +141,63 @@ function downloadCertificate(req, res) {
     doc.moveDown(0.8);
     doc.fontSize(32)
        .fillColor('#111827')
-       .font('Helvetica-Bold')
+       .font(FONT_BOLD)
        .text('CHỨNG CHỈ HOÀN THÀNH', { align: 'center' });
 
     // ── Trao cho ──────────────────────────────────────────────────────────────
     doc.moveDown(0.6);
     doc.fontSize(13)
        .fillColor('#6b7280')
-       .font('Helvetica')
+       .font(FONT_REGULAR)
        .text('Trao tặng cho', { align: 'center' });
 
     // ── Tên học viên ──────────────────────────────────────────────────────────
     doc.moveDown(0.4);
     doc.fontSize(26)
        .fillColor('#1a56db')
-       .font('Helvetica-BoldOblique')
+       .font(FONT_BOLD_ITALIC)
        .text(studentName, { align: 'center' });
 
     // ── Đã hoàn thành khóa học ────────────────────────────────────────────────
     doc.moveDown(0.6);
     doc.fontSize(13)
        .fillColor('#6b7280')
-       .font('Helvetica')
+       .font(FONT_REGULAR)
        .text('đã hoàn thành xuất sắc khóa học', { align: 'center' });
 
     // ── Tên khóa học ──────────────────────────────────────────────────────────
     doc.moveDown(0.4);
     doc.fontSize(20)
        .fillColor('#111827')
-       .font('Helvetica-Bold')
+       .font(FONT_BOLD)
        .text(`"${course.title}"`, { align: 'center' });
 
     // ── Giảng viên ────────────────────────────────────────────────────────────
     doc.moveDown(0.5);
     doc.fontSize(12)
        .fillColor('#374151')
-       .font('Helvetica')
+       .font(FONT_REGULAR)
        .text(`Giảng viên: ${course.instructor_name}`, { align: 'center' });
 
     // ── Ngày cấp ──────────────────────────────────────────────────────────────
     doc.moveDown(0.4);
     doc.fontSize(12)
        .fillColor('#374151')
+       .font(FONT_REGULAR)
        .text(`Ngày cấp: ${issuedFormatted}`, { align: 'center' });
 
     // ── Mã chứng chỉ ─────────────────────────────────────────────────────────
     doc.moveDown(0.5);
     doc.fontSize(11)
        .fillColor('#6b7280')
+       .font(FONT_REGULAR)
        .text(`Mã chứng chỉ: ${certificate_code}`, { align: 'center' });
 
     // ── Dòng xác thực ─────────────────────────────────────────────────────────
     doc.moveDown(0.4);
     doc.fontSize(9)
        .fillColor('#9ca3af')
+       .font(FONT_REGULAR)
        .text(`Xác thực chứng chỉ tại: /certificate-verify?code=${certificate_code}`, {
          align: 'center',
        });

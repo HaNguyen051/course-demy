@@ -354,4 +354,10 @@ if (!progressColumns.find((col) => col.name === 'completed_at')) {
 
 console.log('Database connected');
 
+// ── Nâng cấp bảng courses: thêm cột level ────────────────────────────────────
+const courseColumns = db.prepare("PRAGMA table_info('courses')").all();
+if (!courseColumns.find((col) => col.name === 'level')) {
+  db.exec(`ALTER TABLE courses ADD COLUMN level TEXT NOT NULL DEFAULT 'beginner' CHECK(level IN ('beginner','intermediate','advanced'))`);
+}
+
 module.exports = db;
