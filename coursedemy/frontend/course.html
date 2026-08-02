@@ -224,6 +224,14 @@ async function renderCoursePage(c) {
        </button>`
     : '';
 
+  const levelMap = {
+    beginner:     { label: 'Cơ bản',   emoji: '🟢', color: 'var(--success)' },
+    intermediate: { label: 'Trung cấp', emoji: '🟡', color: 'var(--warning)' },
+    advanced:     { label: 'Nâng cao',  emoji: '🔴', color: 'var(--danger)'  },
+  };
+  const lvl = levelMap[c.level] || levelMap['beginner'];
+  const levelBadgeHtml = `<span class="badge" style="border:1px solid ${lvl.color};color:${lvl.color};background:transparent">${lvl.emoji} ${lvl.label}</span>`;
+
   document.getElementById('content').innerHTML = `
     <nav class="breadcrumb">
       <a href="/index.html">Trang chủ</a>
@@ -240,6 +248,7 @@ async function renderCoursePage(c) {
         <div style="margin-top:24px">
           <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
             ${c.category ? `<span class="badge badge-outline">📂 ${c.category.name}</span>` : ''}
+            ${levelBadgeHtml}
             ${statusBadge(c.status)}
           </div>
 
@@ -254,6 +263,10 @@ async function renderCoursePage(c) {
             <div class="info-row">
               📂 <strong>Danh mục:</strong>
               <span>${c.category?.name || '—'}</span>
+            </div>
+            <div class="info-row">
+              ${lvl.emoji} <strong>Cấp độ:</strong>
+              <span style="color:${lvl.color};font-weight:600">${lvl.label}</span>
             </div>
             <div class="info-row">
               📅 <strong>Ngày tạo:</strong>
@@ -282,6 +295,7 @@ async function renderCoursePage(c) {
           <div style="font-size:0.85rem;color:var(--text-dim)">
             <div class="info-row" style="padding:8px 0">👤 <span>${c.instructor?.full_name || '—'}</span></div>
             ${c.category ? `<div class="info-row" style="padding:8px 0">📂 <span>${c.category.name}</span></div>` : ''}
+            <div class="info-row" style="padding:8px 0">${lvl.emoji} <span style="color:${lvl.color};font-weight:600">${lvl.label}</span></div>
             <div class="info-row" style="padding:8px 0">📅 <span>${formatDate(c.created_at)}</span></div>
             <div class="info-row" style="padding:8px 0">⭐ <span>${cnt > 0 ? `${avg.toFixed(1)} / 5` : 'Chưa có đánh giá'}</span></div>
           </div>

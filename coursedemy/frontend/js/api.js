@@ -159,13 +159,20 @@ function courseCard(course, linkPrefix = '/course.html') {
   const thumb = course.thumbnail
     ? `<img src="${course.thumbnail}" alt="${course.title}" class="card-thumb">`
     : `<div class="card-thumb-placeholder"><span>📚</span></div>`;
+  const _lvlMap = { beginner: '🟢 Cơ bản', intermediate: '🟡 Trung cấp', advanced: '🔴 Nâng cao' };
+  const _lvlColor = { beginner: 'var(--success)', intermediate: 'var(--warning)', advanced: 'var(--danger)' };
+  const lvlKey = course.level || 'beginner';
+  const lvlBadge = `<span class="badge" style="border:1px solid ${_lvlColor[lvlKey]};color:${_lvlColor[lvlKey]};background:transparent;font-size:.72rem">${_lvlMap[lvlKey]}</span>`;
   return `
     <div class="course-card">
       <a href="${linkPrefix}?id=${course.id}" class="card-thumb-wrap">${thumb}${wishHeartHtml(course.id)}</a>
       <div class="card-body">
         <h3 class="card-title"><a href="${linkPrefix}?id=${course.id}">${course.title}</a></h3>
         <p class="card-instructor">👤 ${course.instructor?.full_name || '—'}</p>
-        ${course.category ? `<span class="badge badge-outline">${course.category.name}</span>` : ''}
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:4px">
+          ${course.category ? `<span class="badge badge-outline">${course.category.name}</span>` : ''}
+          ${lvlBadge}
+        </div>
         ${starDisplayHtml(course)}
         <div class="card-footer">
           ${formatPrice(course.price)}

@@ -63,10 +63,15 @@ function getInstructorCourses(req, res) {
 
 // ─── POST /api/instructor/courses ────────────────────────────────────────────
 function createCourse(req, res) {
-  const { title, description, price = 0, category_id, thumbnail } = req.body;
+  const { title, description, price = 0, category_id, thumbnail, level = 'beginner' } = req.body;
 
   if (!title || !title.trim()) {
     return res.status(400).json({ success: false, message: 'Tiêu đề khóa học không được để trống' });
+  }
+
+  const validLevels = ['beginner', 'intermediate', 'advanced'];
+  if (!validLevels.includes(level)) {
+    return res.status(400).json({ success: false, message: 'Cấp độ không hợp lệ. Chọn: beginner, intermediate, advanced' });
   }
 
   try {
@@ -79,8 +84,8 @@ function createCourse(req, res) {
     }
 
     const result = db.prepare(`
-      INSERT INTO courses (title, description, price, category_id, instructor_id, thumbnail, status)
-      VALUES (?, ?, ?, ?, ?, ?, 'pending')
+      INSERT INTO courses (title, description, price, category_id, instructor_id, thumbnail, status, level)
+      VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)
     `).run(
       title.trim(),
       description ?? null,
@@ -88,10 +93,11 @@ function createCourse(req, res) {
       category_id ?? null,
       req.user.id,
       thumbnail ?? null,
+      level,
     );
 
     const newCourse = db
-      .prepare('SELECT id, title, status, created_at FROM courses WHERE id = ?')
+      .prepare('SELECT id, title, status, level, created_at FROM courses WHERE id = ?')
       .get(result.lastInsertRowid);
 
     return res.status(201).json({
@@ -113,7 +119,15 @@ function updateCourse(req, res) {
     const existing = getCourseOrFail(courseId, req.user.id, res);
     if (!existing) return; // response đã được gửi trong helper
 
-    const { title, description, price, category_id, thumbnail } = req.body;
+    const { title, description, price, category_id, thumbnail, level } = req.body;
+
+    // Kiểm tra level nếu được truyền
+    if (level !== undefined) {
+      const validLevels = ['beginner', 'intermediate', 'advanced'];
+      if (!validLevels.includes(level)) {
+        return res.status(400).json({ success: false, message: 'Cấp độ không hợp lệ. Chọn: beginner, intermediate, advanced' });
+      }
+    }
 
     // Kiểm tra category_id nếu được truyền
     if (category_id != null) {
@@ -132,6 +146,7 @@ function updateCourse(req, res) {
     if (price      !== undefined) { fields.push('price = ?');       params.push(parseFloat(price) || 0); }
     if (category_id !== undefined) { fields.push('category_id = ?'); params.push(category_id); }
     if (thumbnail  !== undefined) { fields.push('thumbnail = ?');   params.push(thumbnail); }
+    if (level      !== undefined) { fields.push('level = ?');       params.push(level); }
 
     if (fields.length === 0) {
       return res.status(400).json({ success: false, message: 'Không có thông tin cần cập nhật' });
@@ -141,7 +156,7 @@ function updateCourse(req, res) {
     db.prepare(`UPDATE courses SET ${fields.join(', ')} WHERE id = ?`).run(...params);
 
     const updated = db
-      .prepare('SELECT id, title, description, price, status, thumbnail FROM courses WHERE id = ?')
+      .prepare('SELECT id, title, description, price, status, thumbnail, level FROM courses WHERE id = ?')
       .get(courseId);
 
     return res.status(200).json({
