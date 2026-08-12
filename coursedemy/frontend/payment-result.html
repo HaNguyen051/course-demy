@@ -93,8 +93,8 @@
 renderNavbar();
 
 const params   = new URLSearchParams(location.search);
-const orderId  = params.get('orderId') || params.get('order_id') || params.get('vnp_TxnRef');
-const statusQ  = params.get('status') || params.get('vnp_ResponseCode');
+const orderId  = params.get('orderId') || params.get('order_id');
+const statusQ  = params.get('status');
 
 let pollCount = 0;
 const MAX_POLLS = 10;
@@ -149,8 +149,7 @@ function renderPending(order) {
 function renderResult(status, order) {
   const card = document.getElementById('result-card');
 
-  // Normalize VNPay response codes: 00 = success
-  const isPaid = status === 'paid' || status === '00' || status === 'completed';
+  const isPaid = status === 'paid' || status === 'completed';
   const isFail = status === 'failed' || status === 'cancelled' || status === 'canceled';
 
   if (isPaid) {

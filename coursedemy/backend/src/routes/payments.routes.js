@@ -9,9 +9,6 @@ const {
   momoCreate,
   momoIpn,
   momoReturn,
-  vnpayCreate,
-  vnpayIpn,
-  vnpayReturn,
   getPaymentStatus,
 } = require('../controllers/payments.controller');
 
@@ -32,16 +29,6 @@ router.post('/momo/ipn', momoIpn);
 
 // GET /api/payments/momo/return  — MoMo redirect người dùng về (public)
 router.get('/momo/return', momoReturn);
-
-// ── VNPay Sandbox ─────────────────────────────────────────────────────────────
-// POST /api/payments/vnpay/create  — tạo URL thanh toán
-router.post('/vnpay/create', authenticate, authorize('student'), vnpayCreate);
-
-// GET /api/payments/vnpay/ipn  — VNPay gọi server-to-server (public)
-router.get('/vnpay/ipn', vnpayIpn);
-
-// GET /api/payments/vnpay/return  — VNPay redirect người dùng về (public)
-router.get('/vnpay/return', vnpayReturn);
 
 // ── Trạng thái thanh toán ─────────────────────────────────────────────────────
 // GET /api/payments/:orderId/status

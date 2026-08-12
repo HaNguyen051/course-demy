@@ -40,6 +40,18 @@
       line-height: 1.5;
     }
     .warn-banner.show { display: block; }
+    /* ── Forgot password panel ───────────────────────────────── */
+    .forgot-panel {
+      display: none;
+      background: rgba(124,58,237,.07);
+      border: 1px solid rgba(124,58,237,.3);
+      border-radius: var(--radius-sm);
+      padding: 18px 20px;
+      margin-top: 16px;
+      animation: fadeIn .2s ease;
+    }
+    .forgot-panel.show { display: block; }
+    .forgot-panel-title { font-size: .85rem; font-weight: 600; margin-bottom: 10px; color: var(--text-dim); }
   </style>
 </head>
 <body class="auth-page">
@@ -78,7 +90,27 @@
       </div>
     </div>
     <button type="submit" id="login-btn" class="btn btn-primary btn-full btn-lg">Đăng nhập</button>
+
+    <label style="display:flex;align-items:center;gap:10px;margin-top:14px;cursor:pointer;user-select:none">
+      <input type="checkbox" id="remember-me"
+        style="width:16px;height:16px;accent-color:var(--primary);cursor:pointer;flex-shrink:0">
+      <span style="font-size:.87rem;color:var(--text-dim)">Duy trì đăng nhập</span>
+    </label>
   </form>
+
+  <p class="auth-footer" style="margin-top:12px">
+    <a href="#" id="forgot-link" onclick="toggleForgotPanel(event)" style="color:var(--text-muted);font-size:.85rem">Quên mật khẩu?</a>
+  </p>
+
+  <!-- Forgot password panel -->
+  <div id="forgot-panel" class="forgot-panel">
+    <div class="forgot-panel-title">🔑 Đặt lại mật khẩu</div>
+    <p style="font-size:.82rem;color:var(--text-muted);margin:0 0 12px">Nhập email đăng ký, chúng tôi sẽ gửi mật khẩu mới về hộp thư của bạn.</p>
+    <div style="display:flex;gap:8px">
+      <input id="forgot-email" type="email" class="form-control" placeholder="email@example.com" style="flex:1;font-size:.88rem">
+      <button id="forgot-btn" class="btn btn-primary" onclick="submitForgotPassword()" style="white-space:nowrap;padding:0 16px">Gửi</button>
+    </div>
+  </div>
 
   <p class="auth-footer">Chưa có tài khoản? <a href="/register.html">Đăng ký ngay</a></p>
   <p class="auth-footer" style="margin-top:8px"><a href="/index.html" style="color:var(--text-muted)">← Về trang chủ</a></p>
@@ -194,14 +226,59 @@ document.getElementById('login-form').addEventListener('submit', async e => {
     return;
   }
 
-  // ── Thành công ────────────────────────────────────────────────────────────
-  setAuth(data.data.token, data.data.user);
+  // ── Thành công ─────────────────────────────────────────────────────
+  const remember = document.getElementById('remember-me').checked;
+  setAuth(data.data.token, data.data.user, remember);
   showToast('Đăng nhập thành công!', 'success');
 
   setTimeout(() => {
     const role = data.data.user.role;
     window.location.href = role === 'admin' ? '/admin.html' : '/index.html';
   }, 600);
+});
+
+// ── Forgot password ───────────────────────────────────────────────────────────
+function toggleForgotPanel(e) {
+  e.preventDefault();
+  const panel = document.getElementById('forgot-panel');
+  panel.classList.toggle('show');
+  if (panel.classList.contains('show')) {
+    document.getElementById('forgot-email').focus();
+  }
+}
+
+async function submitForgotPassword() {
+  const emailVal = document.getElementById('forgot-email').value.trim();
+  const btn      = document.getElementById('forgot-btn');
+
+  if (!emailVal) {
+    showToast('Vui lòng nhập email', 'error');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Đang gửi...';
+
+  const { ok, data } = await apiFetch('/auth/forgot-password', {
+    method: 'POST',
+    body: JSON.stringify({ email: emailVal }),
+  });
+
+  btn.disabled = false;
+  btn.textContent = 'Gửi';
+
+  if (ok) {
+    showToast(data.message || 'Kiểm tra hộp thư email của bạn!', 'success');
+    document.getElementById('forgot-panel').classList.remove('show');
+    document.getElementById('forgot-email').value = '';
+  } else {
+    showToast(data.message || 'Có lỗi xảy ra, vui lòng thử lại', 'error');
+  }
+}
+
+// Submit forgot form khi nhấn Enter
+document.getElementById('forgot-email').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); submitForgotPassword(); }
 });
 </script>
 </body>

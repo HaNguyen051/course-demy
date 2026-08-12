@@ -3,17 +3,32 @@ const API_BASE = 'http://localhost:3000/api';
 // ══════════════════════════════════════════════════════
 //  AUTH HELPERS
 // ══════════════════════════════════════════════════════
-function getToken() { return localStorage.getItem('token'); }
-function getUser()  {
-  try { return JSON.parse(localStorage.getItem('user')); } catch { return null; }
+// Lấy từ cả hai storage (ưu tiên localStorage — remember me)
+function getToken() {
+  return localStorage.getItem('token') || sessionStorage.getItem('token');
 }
-function setAuth(token, user) {
-  localStorage.setItem('token', token);
-  localStorage.setItem('user', JSON.stringify(user));
+function getUser() {
+  try {
+    const raw = localStorage.getItem('user') || sessionStorage.getItem('user');
+    return JSON.parse(raw);
+  } catch { return null; }
+}
+// remember=true  → localStorage  (tồn tại kể cả đóng trình duyệt)
+// remember=false → sessionStorage (mất khi đóng tab/trình duyệt)
+function setAuth(token, user, remember = false) {
+  const storage = remember ? localStorage : sessionStorage;
+  storage.setItem('token', token);
+  storage.setItem('user', JSON.stringify(user));
+  // Xoá storage còn lại để tránh xung đột
+  const other = remember ? sessionStorage : localStorage;
+  other.removeItem('token');
+  other.removeItem('user');
 }
 function clearAuth() {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
+  sessionStorage.removeItem('token');
+  sessionStorage.removeItem('user');
 }
 function isLoggedIn() { return !!getToken(); }
 

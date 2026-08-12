@@ -195,7 +195,7 @@ async function loadUsers(page = 1) {
       ${users.map(u => {
         const isAdmin = u.role === 'admin';
         const isSelf  = u.id === currentAdmin.id;
-        const active  = u.is_active !== false && u.status !== 'locked';
+        const active  = u.is_active != 0 && u.status !== 'locked';
 
         return `<tr id="user-row-${u.id}">
           <td>

@@ -1,11 +1,12 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../config/database');
+const { sendNewPasswordEmail } = require('../utils/mailer');
 
 const SALT_ROUNDS = 10;
 const ALLOWED_ROLES = ['student', 'instructor'];
 const MAX_ATTEMPTS = 5;
-const LOCK_MINUTES = 5;
+const LOCK_MINUTES = 15;
 
 // ─── Regex helpers ────────────────────────────────────────────────────────────
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;          // TC007
@@ -104,6 +105,14 @@ function login(req, res) {
     return res.status(400).json({
       success: false,
       message: 'Vui lòng điền đầy đủ email và password',
+    });
+  }
+
+  // TC014 — Validate định dạng email trước khi truy vấn DB
+  if (!EMAIL_REGEX.test(email.trim())) {
+    return res.status(400).json({
+      success: false,
+      message: 'Email không đúng định dạng (ví dụ: user@example.com)',
     });
   }
 
@@ -278,4 +287,56 @@ function updateProfile(req, res) {
   }
 }
 
-module.exports = { register, login, getMe, updateProfile };
+// ─── POST /api/auth/forgot-password ─────────────────────────────────────────
+async function forgotPassword(req, res) {
+  const { email } = req.body;
+
+  if (!email || !email.trim()) {
+    return res.status(400).json({ success: false, message: 'Vui lòng cung cấp email' });
+  }
+
+  // Không tiết lộ email có tồn tại không — luôn trả 200
+  const user = db
+    .prepare('SELECT id, full_name, email, status FROM users WHERE email = ?')
+    .get(email.trim());
+
+  if (!user) {
+    // Trả 200 để tránh enumeration attack
+    return res.status(200).json({
+      success: true,
+      message: 'Nếu email tồn tại trong hệ thống, mật khẩu mới sẽ được gửi trong vài giây.',
+    });
+  }
+
+  if (user.status === 'locked') {
+    return res.status(403).json({
+      success: false,
+      message: 'Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên.',
+    });
+  }
+
+  // Tạo mật khẩu mới ngẫu nhiên 10 ký tự
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  let newPass = '';
+  for (let i = 0; i < 10; i++) {
+    newPass += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+
+  const hashedPass = bcrypt.hashSync(newPass, SALT_ROUNDS);
+
+  db.prepare('UPDATE users SET password = ? WHERE id = ?').run(hashedPass, user.id);
+
+  try {
+    await sendNewPasswordEmail(user.email, user.full_name, newPass);
+  } catch (mailErr) {
+    console.error('[forgotPassword] mail error:', mailErr);
+    return res.status(500).json({ success: false, message: 'Không thể gửi email. Vui lòng thử lại sau.' });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: 'Nếu email tồn tại trong hệ thống, mật khẩu mới sẽ được gửi trong vài giây.',
+  });
+}
+
+module.exports = { register, login, getMe, updateProfile, forgotPassword };

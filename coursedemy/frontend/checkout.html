@@ -220,14 +220,6 @@ async function loadCheckout() {
                 <div class="payment-method-desc">Thanh toán qua ví điện tử MoMo</div>
               </div>
             </label>
-            <label class="payment-method-card">
-              <input type="radio" name="payment" value="vnpay" onchange="selectedPayment='vnpay'">
-              <span class="payment-method-icon">🏦</span>
-              <div>
-                <div class="payment-method-name">VNPay</div>
-                <div class="payment-method-desc">Thanh toán qua cổng VNPay / ATM / Thẻ</div>
-              </div>
-            </label>
           </div>
 
           <div class="secure-badge">🔒 Thanh toán an toàn &amp; bảo mật</div>
@@ -350,20 +342,6 @@ async function doCheckout() {
     if (payUrl) { window.location.href = payUrl; }
     else { showToast('Không nhận được URL thanh toán MoMo', 'error'); btn.disabled = false; btn.innerHTML = '✅ Xác nhận thanh toán'; }
 
-  } else if (selectedPayment === 'vnpay') {
-    const { ok: payOk, data: payData } = await apiFetch('/payments/vnpay/create', {
-      method: 'POST',
-      body: JSON.stringify({ order_id: orderId }),
-    });
-    hideSpinner();
-    if (!payOk) {
-      showToast(payData.message || 'Không thể tạo thanh toán VNPay', 'error');
-      btn.disabled = false; btn.innerHTML = '✅ Xác nhận thanh toán';
-      return;
-    }
-    const payUrl = payData.data?.payUrl ?? payData.payUrl;
-    if (payUrl) { window.location.href = payUrl; }
-    else { showToast('Không nhận được URL thanh toán VNPay', 'error'); btn.disabled = false; btn.innerHTML = '✅ Xác nhận thanh toán'; }
   }
 }
 

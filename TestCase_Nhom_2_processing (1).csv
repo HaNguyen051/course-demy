@@ -1,0 +1,1578 @@
+Test Case ID,Module,Test Scenario,Test Case,Preconditions,Test Steps,Test Data,Expected Result,Actual Result,Status (P/F),Priority
+1. Đăng ký,,,,,,,,,,
+TC001,Student-Register,Đăng ký thành công,Đăng ký hợp lệ,Chưa có tài khoản,Mở trang > Nhập thông tin > OTP > Đăng ký,Email mới,Tạo tài khoản,,,High
+TC002,Student-Register,Email tồn tại,Đăng ký email tồn tại,Email đã tồn tại,Nhập email đã tồn tại,admin@gmail.com,Thông báo email đã tồn tại,,,High
+TC003,Student-Register,Thiếu email,Đăng ký thiếu email,,Để trống email,Trống,Yêu cầu nhập email,,,High
+TC004,Student-Register,Thiếu mật khẩu,Đăng ký thiếu mật khẩu,,Để trống mật khẩu,Trống,Yêu cầu nhập mật khẩu,,,High
+TC005,Student-Register,Mật khẩu quá ngắn,Đăng ký mật khẩu dưới 6 ký tự,,Nhập mật khẩu ngắn,123,Thông báo mật khẩu phải từ 6 ký tự trở lên,,,Medium
+TC006,Student-Register,Mật khẩu không khớp,Đăng ký nhập lại mật khẩu sai,,Nhập hai mật khẩu khác nhau,Pass: 123456; Confirm: 123457,Thông báo mật khẩu nhập lại không khớp,,,High
+TC007,Student-Register,Email sai định dạng,Đăng ký email thiếu @,,Nhập email sai cấu trúc,testgmail.com,Thông báo email không đúng định dạng,,,Medium
+TC008,Student-Register,Ký tự đặc biệt trong tên,Đăng ký tên chứa ký tự lạ,,Nhập tên có ký tự đặc biệt,@#$%,Thông báo tên không hợp lệ hoặc tự động loại bỏ,,,Low
+2. Đăng nhập,,,,,,,,,,
+TC009,Student-Login,Đăng nhập thành công,Login hợp lệ,Có tài khoản,Nhập đúng thông tin,QuangAnh@gmail.com,Đăng nhập thành công,,,High
+TC010,Student-Login,Sai mật khẩu,Login sai mật khẩu,Có tài khoản,Nhập sai mật khẩu,wrongpass,Sai email hoặc mật khẩu,,,High
+TC011,Student-Login,Sai email,Login sai email,Có tài khoản,Nhập email sai,wrongmail@gmail.com,Sai email hoặc mật khẩu,,,High
+TC012,Student-Login,Thiếu email,Login thiếu email,Có tài khoản,Để trống email,,Yêu cầu nhập email,,,Medium
+TC013,Student-Login,Thiếu mật khẩu,Login thiếu mật khẩu,Có tài khoản,Để trống mật khẩu,,Yêu cầu nhập mật khẩu,,,Medium
+TC014,Student-Login,Sai định dạng email,Login nhập sai định dạng,Có tài khoản,Nhập email sai định dạng,example@ggmai.com,Thông báo email không hợp lệ,,,Medium
+TC015,Student-Login,Tài khoản bị khóa,Đăng nhập vào tk bị khóa,Tài khoản bị khóa trước đó,Nhập đúng thông tin đăng nhập,locked@gmail.com,Thông báo tài khoản đã bị khóa,,,High
+TC016,Student-Login,Brute Force ngăn chặn,Nhập sai mật khẩu liên tiếp 5 lần,Có tài khoản,Nhập sai pass 5 lần liên tục,Đăng nhập sai 5 lần,Tạm khóa tài khoản trong 15 phút,,,High
+TC017,Student-Login,Quên mật khẩu,Yêu cầu lại mật khẩu qua email,Có tài khoản,Click Quên mật khẩu > Nhập email,QuangAnh@gmail.com,Hệ thống gửi link/mã đặt lại mật khẩu về email,,,High
+TC018,Student-Login,Duy trì đăng nhập,Chọn Ghi nhớ đăng nhập,,"Tích chọn ""Remember me"" rồi login",,Phiên đăng nhập được lưu giữ khi tắt trình duyệt,,,Medium
+3. Tìm kiếm,,,,,,,,,,
+TC019,Search,Tìm theo tên,Tìm khóa học,,Nhập C%23,C%23,Hiển thị kết quả,"{
+    ""success"": true,
+    ""data"": {
+        ""courses"": [
+            {
+                ""id"": 18,
+                ""title"": ""Lập trình C# nâng cao"",
+                ""description"": ""Dành cho người đã có nền tảng sẵn"",
+                ""price"": 699000,
+                ""thumbnail"": ""www.linkedin.com"",
+                ""status"": ""approved"",
+                ""created_at"": ""2026-07-30 06:37:26"",
+                ""avg_rating"": 5,
+                ""reviews_count"": 1,
+                ""category"": {
+                    ""id"": 5,
+                    ""name"": ""Lập trình""
+                },
+                ""instructor"": {
+                    ""id"": 8,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            }
+        ],
+        ""total"": 1,
+        ""page"": 1,
+        ""totalPages"": 1
+    }
+}",P,High
+TC020,Search,Theo giảng viên,Tìm theo giảng viên,,Nhập tên GV,Tran Thi Instructor,Hiển thị khóa học,"{
+    ""success"": true,
+    ""data"": {
+        ""courses"": [
+            {
+                ""id"": 1,
+                ""title"": ""Lập trình Python cơ bản"",
+                ""description"": ""Khóa học lập trình Python từ cơ bản đến nâng cao dành cho người mới bắt đầu."",
+                ""price"": 299000,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 0,
+                ""reviews_count"": 0,
+                ""category"": {
+                    ""id"": 1,
+                    ""name"": ""Lập trình""
+                },
+                ""instructor"": {
+                    ""id"": 2,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            },
+            {
+                ""id"": 2,
+                ""title"": ""JavaScript từ A-Z"",
+                ""description"": ""Học JavaScript toàn diện từ cú pháp cơ bản đến lập trình bất đồng bộ."",
+                ""price"": 399000,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 0,
+                ""reviews_count"": 0,
+                ""category"": {
+                    ""id"": 1,
+                    ""name"": ""Lập trình""
+                },
+                ""instructor"": {
+                    ""id"": 2,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            },
+            {
+                ""id"": 5,
+                ""title"": ""Khởi nghiệp từ ý tưởng"",
+                ""description"": ""Hướng dẫn từng bước để biến ý tưởng thành mô hình kinh doanh thực tế."",
+                ""price"": 0,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 0,
+                ""reviews_count"": 0,
+                ""category"": {
+                    ""id"": 4,
+                    ""name"": ""Kinh doanh""
+                },
+                ""instructor"": {
+                    ""id"": 2,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            }
+        ],
+        ""total"": 3,
+        ""page"": 1,
+        ""totalPages"": 1
+    }
+}",P,Medium
+TC021,Search,Không có kết quả,Từ khóa lạ,,Tìm,ABCXYZ,Thông báo không tìm thấy,"{
+    ""success"": true,
+    ""data"": {
+        ""courses"": [],
+        ""total"": 0,
+        ""page"": 1,
+        ""totalPages"": 0
+    }
+}",P,Medium
+TC022,Search,Ký tự đặc biệt,Tìm ký tự,,Tìm,@#$,Không lỗi hệ thống / Trả về không tìm thấy,"{
+    ""success"": true,
+    ""data"": {
+        ""courses"": [],
+        ""total"": 0,
+        ""page"": 1,
+        ""totalPages"": 0
+    }
+}",P,Medium
+TC023,Search,Chuỗi quá dài,Tìm kiếm với từ khóa > 255 ký tự,,Nhập chuỗi cực dài,Chuỗi 300 ký tự,Cắt chuỗi hoặc thông báo từ khóa quá dài,"{
+    ""success"": true,
+    ""data"": {
+        ""courses"": [],
+        ""total"": 0,
+        ""page"": 1,
+        ""totalPages"": 0
+    }
+}",P,Low
+TC024,Search,Khoảng trắng,Tìm kiếm chỉ chứa khoảng trắng,,Nhập toàn dấu cách,"""   """,Không thực hiện tìm kiếm hoặc hiển thị toàn bộ,"{
+    ""success"": true,
+    ""data"": {
+        ""courses"": [
+            {
+                ""id"": 1,
+                ""title"": ""Lập trình Python cơ bản"",
+                ""description"": ""Khóa học lập trình Python từ cơ bản đến nâng cao dành cho người mới bắt đầu."",
+                ""price"": 299000,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 0,
+                ""reviews_count"": 0,
+                ""category"": {
+                    ""id"": 1,
+                    ""name"": ""Lập trình""
+                },
+                ""instructor"": {
+                    ""id"": 2,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            },
+            {
+                ""id"": 2,
+                ""title"": ""JavaScript từ A-Z"",
+                ""description"": ""Học JavaScript toàn diện từ cú pháp cơ bản đến lập trình bất đồng bộ."",
+                ""price"": 399000,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 0,
+                ""reviews_count"": 0,
+                ""category"": {
+                    ""id"": 1,
+                    ""name"": ""Lập trình""
+                },
+                ""instructor"": {
+                    ""id"": 2,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            },
+            {
+                ""id"": 3,
+                ""title"": ""Thiết kế UI/UX với Figma"",
+                ""description"": ""Nắm vững thiết kế giao diện và trải nghiệm người dùng bằng Figma."",
+                ""price"": 249000,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 0,
+                ""reviews_count"": 0,
+                ""category"": {
+                    ""id"": 2,
+                    ""name"": ""Thiết kế""
+                },
+                ""instructor"": {
+                    ""id"": 3,
+                    ""full_name"": ""Le Van Instructor""
+                }
+            },
+            {
+                ""id"": 4,
+                ""title"": ""Tiếng Anh giao tiếp B1"",
+                ""description"": ""Khóa học tiếng Anh giao tiếp đạt trình độ B1 theo khung CEFR."",
+                ""price"": 199000,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 0,
+                ""reviews_count"": 0,
+                ""category"": {
+                    ""id"": 3,
+                    ""name"": ""Ngoại ngữ""
+                },
+                ""instructor"": {
+                    ""id"": 3,
+                    ""full_name"": ""Le Van Instructor""
+                }
+            },
+            {
+                ""id"": 5,
+                ""title"": ""Khởi nghiệp từ ý tưởng"",
+                ""description"": ""Hướng dẫn từng bước để biến ý tưởng thành mô hình kinh doanh thực tế."",
+                ""price"": 0,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 0,
+                ""reviews_count"": 0,
+                ""category"": {
+                    ""id"": 4,
+                    ""name"": ""Kinh doanh""
+                },
+                ""instructor"": {
+                    ""id"": 2,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            }
+        ],
+        ""total"": 5,
+        ""page"": 1,
+        ""totalPages"": 1
+    }
+}",P,Low
+4. Bộ lọc,,,,,,,,,,
+TC025,Filter,Theo danh mục,Lọc danh mục,,Chọn Lập trình,1,Hiển thị đúng khóa học Lập trình,"{
+    ""success"": true,
+    ""data"": {
+        ""courses"": [
+            {
+                ""id"": 1,
+                ""title"": ""Lập trình Python cơ bản"",
+                ""description"": ""Khóa học lập trình Python từ cơ bản đến nâng cao dành cho người mới bắt đầu."",
+                ""price"": 299000,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 5,
+                ""reviews_count"": 1,
+                ""category"": {
+                    ""id"": 1,
+                    ""name"": ""Lập trình""
+                },
+                ""instructor"": {
+                    ""id"": 2,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            },
+            {
+                ""id"": 2,
+                ""title"": ""JavaScript từ A-Z"",
+                ""description"": ""Học JavaScript toàn diện từ cú pháp cơ bản đến lập trình bất đồng bộ."",
+                ""price"": 399000,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 4,
+                ""reviews_count"": 1,
+                ""category"": {
+                    ""id"": 1,
+                    ""name"": ""Lập trình""
+                },
+                ""instructor"": {
+                    ""id"": 2,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            }
+        ],
+        ""total"": 2,
+        ""page"": 1,
+        ""totalPages"": 1
+    }
+}",P,High
+TC026,Filter,Theo giá,Lọc giá,,Chọn khoảng giá từ 100k-500k,Trống,Đúng khoảng giá hiển thị,"{
+    ""success"": true,
+    ""data"": {
+        ""courses"": [
+            {
+                ""id"": 18,
+                ""title"": ""Lập trình C# nâng cao"",
+                ""description"": ""Dành cho người đã có nền tảng sẵn"",
+                ""price"": 699000,
+                ""thumbnail"": ""www.linkedin.com"",
+                ""status"": ""approved"",
+                ""created_at"": ""2026-07-30 06:37:26"",
+                ""avg_rating"": 5,
+                ""reviews_count"": 1,
+                ""category"": {
+                    ""id"": 5,
+                    ""name"": ""Lập trình""
+                },
+                ""instructor"": {
+                    ""id"": 8,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            },
+            {
+                ""id"": 17,
+                ""title"": ""Kiểm thử phần mềm"",
+                ""description"": ""..."",
+                ""price"": 599000,
+                ""thumbnail"": ""base.vn"",
+                ""status"": ""approved"",
+                ""created_at"": ""2026-07-30 05:58:33"",
+                ""avg_rating"": 0,
+                ""reviews_count"": 0,
+                ""category"": {
+                    ""id"": 5,
+                    ""name"": ""Lập trình""
+                },
+                ""instructor"": {
+                    ""id"": 13,
+                    ""full_name"": ""Trần Tiến Dũng""
+                }
+            },
+            {
+                ""id"": 16,
+                ""title"": ""Đảm bảo chất lượng phần mềm"",
+                ""description"": ""..."",
+                ""price"": 499000,
+                ""thumbnail"": ""tailieuhoc.net"",
+                ""status"": ""approved"",
+                ""created_at"": ""2026-07-30 05:56:42"",
+                ""avg_rating"": 0,
+                ""reviews_count"": 0,
+                ""category"": {
+                    ""id"": 6,
+                    ""name"": ""Thiết kế""
+                },
+                ""instructor"": {
+                    ""id"": 13,
+                    ""full_name"": ""Trần Tiến Dũng""
+                }
+            },
+            {
+                ""id"": 15,
+                ""title"": ""an"",
+                ""description"": ""..."",
+                ""price"": 900000,
+                ""thumbnail"": ""https://example.com/intro.exe"",
+                ""status"": ""approved"",
+                ""created_at"": ""2026-07-29 16:22:32"",
+                ""avg_rating"": 0,
+                ""reviews_count"": 0,
+                ""category"": {
+                    ""id"": 5,
+                    ""name"": ""Lập trình""
+                },
+                ""instructor"": {
+                    ""id"": 8,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            },
+            {
+                ""id"": 9,
+                ""title"": ""JavaScript từ A-Z"",
+                ""description"": ""Học JavaScript toàn diện từ cú pháp cơ bản đến lập trình bất đồng bộ."",
+                ""price"": 399000,
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-07-29 11:38:45"",
+                ""avg_rating"": 5,
+                ""reviews_count"": 1,
+                ""category"": {
+                    ""id"": 5,
+                    ""name"": ""Lập trình""
+                },
+                ""instructor"": {
+                    ""id"": 8,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            },
+            {
+                ""id"": 10,
+                ""title"": ""Thiết kế UI/UX với Figma"",
+                ""description"": ""Nắm vững thiết kế giao diện và trải nghiệm người dùng bằng Figma."",
+                ""price"": 249000,
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-07-29 11:38:45"",
+                ""avg_rating"": 0,
+                ""reviews_count"": 0,
+                ""category"": {
+                    ""id"": 6,
+                    ""name"": ""Thiết kế""
+                },
+                ""instructor"": {
+                    ""id"": 9,
+                    ""full_name"": ""Le Van Instructor""
+                }
+            },
+            {
+                ""id"": 11,
+                ""title"": ""Tiếng Anh giao tiếp B1"",
+                ""description"": ""Khóa học tiếng Anh giao tiếp đạt trình độ B1 theo khung CEFR."",
+                ""price"": 199000,
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-07-29 11:38:45"",
+                ""avg_rating"": 0,
+                ""reviews_count"": 0,
+                ""category"": {
+                    ""id"": 7,
+                    ""name"": ""Ngoại ngữ""
+                },
+                ""instructor"": {
+                    ""id"": 9,
+                    ""full_name"": ""Le Van Instructor""
+                }
+            },
+            {
+                ""id"": 12,
+                ""title"": ""Khởi nghiệp từ ý tưởng"",
+                ""description"": ""Hướng dẫn từng bước để biến ý tưởng thành mô hình kinh doanh thực tế."",
+                ""price"": 0,
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-07-29 11:38:45"",
+                ""avg_rating"": 0,
+                ""reviews_count"": 0,
+                ""category"": {
+                    ""id"": 8,
+                    ""name"": ""Kinh doanh""
+                },
+                ""instructor"": {
+                    ""id"": 8,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            },
+            {
+                ""id"": 13,
+                ""title"": ""Docker cho người mới"",
+                ""description"": ""Làm quen với Docker, container hóa ứng dụng và triển khai thực tế."",
+                ""price"": 150000,
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-07-29 11:38:45"",
+                ""avg_rating"": 0,
+                ""reviews_count"": 0,
+                ""category"": {
+                    ""id"": 5,
+                    ""name"": ""Lập trình""
+                },
+                ""instructor"": {
+                    ""id"": 8,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            },
+            {
+                ""id"": 14,
+                ""title"": ""Marketing Online cơ bản"",
+                ""description"": ""Tổng quan về marketing online: SEO, Facebook Ads, Google Ads."",
+                ""price"": 99000,
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-07-29 11:38:45"",
+                ""avg_rating"": 0,
+                ""reviews_count"": 0,
+                ""category"": {
+                    ""id"": 8,
+                    ""name"": ""Kinh doanh""
+                },
+                ""instructor"": {
+                    ""id"": 9,
+                    ""full_name"": ""Le Van Instructor""
+                }
+            }
+        ],
+        ""total"": 10,
+        ""page"": 1,
+        ""totalPages"": 1
+    }
+}",P,Medium
+TC027,Filter,Theo sao,Lọc đánh giá,,Chọn >=4 sao,4,Đúng kết quả từ 4 sao trở lên,"{
+    ""success"": true,
+    ""data"": {
+        ""courses"": [
+            {
+                ""id"": 1,
+                ""title"": ""Lập trình Python cơ bản"",
+                ""description"": ""Khóa học lập trình Python từ cơ bản đến nâng cao dành cho người mới bắt đầu."",
+                ""price"": 299000,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 5,
+                ""reviews_count"": 1,
+                ""category"": {
+                    ""id"": 1,
+                    ""name"": ""Lập trình""
+                },
+                ""instructor"": {
+                    ""id"": 2,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            },
+            {
+                ""id"": 2,
+                ""title"": ""JavaScript từ A-Z"",
+                ""description"": ""Học JavaScript toàn diện từ cú pháp cơ bản đến lập trình bất đồng bộ."",
+                ""price"": 399000,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 4,
+                ""reviews_count"": 1,
+                ""category"": {
+                    ""id"": 1,
+                    ""name"": ""Lập trình""
+                },
+                ""instructor"": {
+                    ""id"": 2,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            }
+        ],
+        ""total"": 2,
+        ""page"": 1,
+        ""totalPages"": 1
+    }
+}",P,Medium
+TC028,Filter,Theo cấp độ,Lọc cấp độ,,Chọn Cơ bản,beginner,Đúng kết quả cấp độ Cơ bản,"{
+    ""success"": true,
+    ""data"": {
+        ""courses"": [
+            {
+                ""id"": 1,
+                ""title"": ""Lập trình Python cơ bản"",
+                ""description"": ""Khóa học lập trình Python từ cơ bản đến nâng cao dành cho người mới bắt đầu."",
+                ""price"": 299000,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 5,
+                ""reviews_count"": 1,
+                ""category"": {
+                    ""id"": 1,
+                    ""name"": ""Lập trình""
+                },
+                ""instructor"": {
+                    ""id"": 2,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            },
+            {
+                ""id"": 2,
+                ""title"": ""JavaScript từ A-Z"",
+                ""description"": ""Học JavaScript toàn diện từ cú pháp cơ bản đến lập trình bất đồng bộ."",
+                ""price"": 399000,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 4,
+                ""reviews_count"": 1,
+                ""category"": {
+                    ""id"": 1,
+                    ""name"": ""Lập trình""
+                },
+                ""instructor"": {
+                    ""id"": 2,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            },
+            {
+                ""id"": 3,
+                ""title"": ""Thiết kế UI/UX với Figma"",
+                ""description"": ""Nắm vững thiết kế giao diện và trải nghiệm người dùng bằng Figma."",
+                ""price"": 249000,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 2,
+                ""reviews_count"": 1,
+                ""category"": {
+                    ""id"": 2,
+                    ""name"": ""Thiết kế""
+                },
+                ""instructor"": {
+                    ""id"": 3,
+                    ""full_name"": ""Le Van Instructor""
+                }
+            },
+            {
+                ""id"": 4,
+                ""title"": ""Tiếng Anh giao tiếp B1"",
+                ""description"": ""Khóa học tiếng Anh giao tiếp đạt trình độ B1 theo khung CEFR."",
+                ""price"": 199000,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 0,
+                ""reviews_count"": 0,
+                ""category"": {
+                    ""id"": 3,
+                    ""name"": ""Ngoại ngữ""
+                },
+                ""instructor"": {
+                    ""id"": 3,
+                    ""full_name"": ""Le Van Instructor""
+                }
+            },
+            {
+                ""id"": 5,
+                ""title"": ""Khởi nghiệp từ ý tưởng"",
+                ""description"": ""Hướng dẫn từng bước để biến ý tưởng thành mô hình kinh doanh thực tế."",
+                ""price"": 0,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 0,
+                ""reviews_count"": 0,
+                ""category"": {
+                    ""id"": 4,
+                    ""name"": ""Kinh doanh""
+                },
+                ""instructor"": {
+                    ""id"": 2,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            }
+        ],
+        ""total"": 5,
+        ""page"": 1,
+        ""totalPages"": 1
+    }
+}",P,Medium
+TC029,Filter,Kết hợp nhiều bộ lọc,Lọc danh mục + giá + đánh giá,,Chọn Lập trình + 200k + 5 sao,,Hiển thị kết quả thỏa mãn đồng thời tất cả điều kiện,"{
+    ""success"": true,
+    ""data"": {
+        ""courses"": [
+            {
+                ""id"": 1,
+                ""title"": ""Lập trình Python cơ bản"",
+                ""description"": ""Khóa học lập trình Python từ cơ bản đến nâng cao dành cho người mới bắt đầu."",
+                ""price"": 299000,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 5,
+                ""reviews_count"": 1,
+                ""category"": {
+                    ""id"": 1,
+                    ""name"": ""Lập trình""
+                },
+                ""instructor"": {
+                    ""id"": 2,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            }
+        ],
+        ""total"": 1,
+        ""page"": 1,
+        ""totalPages"": 1
+    }
+}",P,High
+TC030,Filter,Xóa bộ lọc,Bỏ tất cả bộ lọc đã chọn,Đang chọn bộ lọc,"Nhấn nút ""Xóa tất cả""",Trống,Giao diện quay về danh sách khóa học mặc định,"{
+    ""success"": true,
+    ""data"": {
+        ""courses"": [
+            {
+                ""id"": 1,
+                ""title"": ""Lập trình Python cơ bản"",
+                ""description"": ""Khóa học lập trình Python từ cơ bản đến nâng cao dành cho người mới bắt đầu."",
+                ""price"": 299000,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 5,
+                ""reviews_count"": 1,
+                ""category"": {
+                    ""id"": 1,
+                    ""name"": ""Lập trình""
+                },
+                ""instructor"": {
+                    ""id"": 2,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            },
+            {
+                ""id"": 2,
+                ""title"": ""JavaScript từ A-Z"",
+                ""description"": ""Học JavaScript toàn diện từ cú pháp cơ bản đến lập trình bất đồng bộ."",
+                ""price"": 399000,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 4,
+                ""reviews_count"": 1,
+                ""category"": {
+                    ""id"": 1,
+                    ""name"": ""Lập trình""
+                },
+                ""instructor"": {
+                    ""id"": 2,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            },
+            {
+                ""id"": 3,
+                ""title"": ""Thiết kế UI/UX với Figma"",
+                ""description"": ""Nắm vững thiết kế giao diện và trải nghiệm người dùng bằng Figma."",
+                ""price"": 249000,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 2,
+                ""reviews_count"": 1,
+                ""category"": {
+                    ""id"": 2,
+                    ""name"": ""Thiết kế""
+                },
+                ""instructor"": {
+                    ""id"": 3,
+                    ""full_name"": ""Le Van Instructor""
+                }
+            },
+            {
+                ""id"": 4,
+                ""title"": ""Tiếng Anh giao tiếp B1"",
+                ""description"": ""Khóa học tiếng Anh giao tiếp đạt trình độ B1 theo khung CEFR."",
+                ""price"": 199000,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 0,
+                ""reviews_count"": 0,
+                ""category"": {
+                    ""id"": 3,
+                    ""name"": ""Ngoại ngữ""
+                },
+                ""instructor"": {
+                    ""id"": 3,
+                    ""full_name"": ""Le Van Instructor""
+                }
+            },
+            {
+                ""id"": 5,
+                ""title"": ""Khởi nghiệp từ ý tưởng"",
+                ""description"": ""Hướng dẫn từng bước để biến ý tưởng thành mô hình kinh doanh thực tế."",
+                ""price"": 0,
+                ""level"": ""beginner"",
+                ""thumbnail"": null,
+                ""status"": ""approved"",
+                ""created_at"": ""2026-08-01 15:51:42"",
+                ""avg_rating"": 0,
+                ""reviews_count"": 0,
+                ""category"": {
+                    ""id"": 4,
+                    ""name"": ""Kinh doanh""
+                },
+                ""instructor"": {
+                    ""id"": 2,
+                    ""full_name"": ""Tran Thi Instructor""
+                }
+            }
+        ],
+        ""total"": 5,
+        ""page"": 1,
+        ""totalPages"": 1
+    }
+}",P,Medium
+5. Khóa học,,,,,,,,,,
+TC031,Course,Chi tiết,Xem chi tiết,,Mở khóa học,1,"Hiển thị đầy đủ thông tin, giá, đề cương","{
+    ""success"": true,
+    ""data"": {
+        ""id"": 1,
+        ""title"": ""Lập trình Python cơ bản"",
+        ""description"": ""Khóa học lập trình Python từ cơ bản đến nâng cao dành cho người mới bắt đầu."",
+        ""price"": 299002,
+        ""thumbnail"": null,
+        ""status"": ""approved"",
+        ""created_at"": ""2026-07-30 09:41:49"",
+        ""avg_rating"": 0,
+        ""reviews_count"": 0,
+        ""category"": {
+            ""id"": 1,
+            ""name"": ""Lập trình""
+        },
+        ""instructor"": {
+            ""id"": 2,
+            ""full_name"": ""Tran Thi Instructor"",
+            ""email"": ""instructor1@example.com""
+        }
+    }
+}",P,High
+TC032,Course,Preview,Xem video thử,,Nhấn xem video preview,Python,Video chạy bình thường kèm âm thanh,"{
+    ""success"": true,
+    ""data"": {
+        ""id"": 1,
+        ""title"": ""Lập trình Python cơ bản"",
+        ""description"": ""Khóa học lập trình Python từ cơ bản đến nâng cao dành cho người mới bắt đầu."",
+        ""price"": 299002,
+        ""thumbnail"": null,
+        ""status"": ""approved"",
+        ""created_at"": ""2026-07-30 09:41:49"",
+        ""avg_rating"": 0,
+        ""reviews_count"": 0,
+        ""category"": {
+            ""id"": 1,
+            ""name"": ""Lập trình""
+        },
+        ""instructor"": {
+            ""id"": 2,
+            ""full_name"": ""Tran Thi Instructor"",
+            ""email"": ""instructor1@example.com""
+        }
+    }
+}",P,Medium
+TC033,Course,Khóa học không tồn tại,Truy cập qua URL sai,,Nhập ID khóa học bừa,URL /course/999999,Hiển thị trang 404 Not Found,"{
+    ""success"": true,
+    ""data"": {
+        ""id"": 1,
+        ""title"": ""Lập trình Python cơ bản"",
+        ""description"": ""Khóa học lập trình Python từ cơ bản đến nâng cao dành cho người mới bắt đầu."",
+        ""price"": 299002,
+        ""thumbnail"": null,
+        ""status"": ""approved"",
+        ""created_at"": ""2026-07-30 09:41:49"",
+        ""avg_rating"": 0,
+        ""reviews_count"": 0,
+        ""category"": {
+            ""id"": 1,
+            ""name"": ""Lập trình""
+        },
+        ""instructor"": {
+            ""id"": 2,
+            ""full_name"": ""Tran Thi Instructor"",
+            ""email"": ""instructor1@example.com""
+        }
+    }
+}",P,Medium
+TC034,Wishlist,Thêm yêu thích,Danh sách yêu thích,,Nhấn tim,1,Đã thêm vào danh sách yêu thích,"{
+    ""success"": true,
+    ""data"": {
+        ""id"": 1,
+        ""title"": ""Lập trình Python cơ bản"",
+        ""description"": ""Khóa học lập trình Python từ cơ bản đến nâng cao dành cho người mới bắt đầu."",
+        ""price"": 299002,
+        ""thumbnail"": null,
+        ""status"": ""approved"",
+        ""created_at"": ""2026-07-30 09:41:49"",
+        ""avg_rating"": 0,
+        ""reviews_count"": 0,
+        ""category"": {
+            ""id"": 1,
+            ""name"": ""Lập trình""
+        },
+        ""instructor"": {
+            ""id"": 2,
+            ""full_name"": ""Tran Thi Instructor"",
+            ""email"": ""instructor1@example.com""
+        }
+    }
+}",P,High
+TC035,Wishlist,Xóa yêu thích,Bỏ yêu thích,,Nhấn tim lần nữa (khi đã thích),1,Đã xóa khỏi danh sách yêu thích,"{
+    ""success"": true,
+    ""data"": {
+        ""id"": 1,
+        ""title"": ""Lập trình Python cơ bản"",
+        ""description"": ""Khóa học lập trình Python từ cơ bản đến nâng cao dành cho người mới bắt đầu."",
+        ""price"": 299002,
+        ""thumbnail"": null,
+        ""status"": ""approved"",
+        ""created_at"": ""2026-07-30 09:41:49"",
+        ""avg_rating"": 0,
+        ""reviews_count"": 0,
+        ""category"": {
+            ""id"": 1,
+            ""name"": ""Lập trình""
+        },
+        ""instructor"": {
+            ""id"": 2,
+            ""full_name"": ""Tran Thi Instructor"",
+            ""email"": ""instructor1@example.com""
+        }
+    }
+}",P,Medium
+TC036,Wishlist,Xem danh sách,Kiểm tra trang Wishlist,Đã có khóa học yêu thích,Vào trang Yêu thích,1,Hiển thị toàn bộ các khóa học đã lưu yêu thích,"{
+    ""success"": true,
+    ""data"": {
+        ""id"": 1,
+        ""title"": ""Lập trình Python cơ bản"",
+        ""description"": ""Khóa học lập trình Python từ cơ bản đến nâng cao dành cho người mới bắt đầu."",
+        ""price"": 299002,
+        ""thumbnail"": null,
+        ""status"": ""approved"",
+        ""created_at"": ""2026-07-30 09:41:49"",
+        ""avg_rating"": 0,
+        ""reviews_count"": 0,
+        ""category"": {
+            ""id"": 1,
+            ""name"": ""Lập trình""
+        },
+        ""instructor"": {
+            ""id"": 2,
+            ""full_name"": ""Tran Thi Instructor"",
+            ""email"": ""instructor1@example.com""
+        }
+    }
+}",P,Medium
+6. Giỏ hàng,,,,,,,,,,
+TC037,Cart,Thêm 1 khóa học,Thêm vào giỏ,,Thêm,11,"Thành công, cập nhật số lượng giỏ hàng = 1","{
+    ""success"": true,
+    ""message"": ""Đã thêm vào giỏ hàng""
+}",P,High
+TC038,Cart,Thêm khóa học không tồn tại,Thêm vào giỏ,,Thêm qua API/URL ảo,9999,"Không thành công, báo lỗi","{
+    ""success"": false,
+    ""message"": ""Khóa học không tồn tại hoặc chưa được duyệt""
+}",p,High
+TC039,Cart,Thêm khóa học đã mua,Thêm vào giỏ,,Thêm khóa học đã sở hữu,11,"Không thành công, nút chuyển thành ""Vào học ngay""","{
+    ""success"": false,
+    ""message"": ""Khóa học đã có trong giỏ hàng""
+}",p,High
+TC040,Cart,Trùng,Thêm trùng,,Thêm lại khóa học đang có trong giỏ,10,Thông báo sản phẩm đã có trong giỏ hàng,"{
+    ""success"": false,
+    ""message"": ""Khóa học đã có trong giỏ hàng""
+}",p,Medium
+TC041,Cart,Xóa,Xóa khỏi giỏ,,Nhấn Xóa ở dòng khóa học,10,"Đã xóa khỏi giỏ, cập nhật lại tổng tiền","{
+    ""success"": true,
+    ""message"": ""Đã xóa khỏi giỏ hàng""
+}",P,High
+TC042,Cart,Giỏ trống,Xem giỏ,,Mở giỏ hàng khi chưa thêm gì,Trống,"Thông báo giỏ hàng trống kèm nút ""Mua ngay""","{
+    ""success"": false,
+    ""message"": ""Không tìm thấy khóa học trong giỏ hàng""
+}",p,Low
+7. Ưu đãi và thanh toán,,,,,,,,,,
+TC043,Coupon,Coupon hợp lệ,Áp dụng coupon còn hạn,,Nhập SALE20,SALE20,"Giảm giá thành công, hiển thị số tiền được giảm","{
+    ""success"": true,
+    ""data"": {
+        ""code"": ""SALE20"",
+        ""subtotal"": 25000000,
+        ""discount_amount"": 5000000,
+        ""total_amount"": 20000000
+    }
+}",P,High
+TC044,Coupon,Coupon hết hạn,Áp dụng coupon hết hạn,,Nhập OLD2025,OLD2025,Thông báo mã giảm giá đã hết hạn,"{
+    ""success"": false,
+    ""message"": ""Mã giảm giá đã hết hạn hoặc chưa có hiệu lực""
+}",P,Medium
+TC045,Coupon,Coupon sai ký tự,Áp dụng mã không tồn tại,,Nhập mã bừa,SAISAI123,Thông báo mã giảm giá không hợp lệ,"{
+    ""success"": false,
+    ""message"": ""Mã giảm giá không tồn tại""
+}",P,Medium
+TC046,Coupon,Không đủ điều kiện giá,Áp dụng coupon cho đơn tối thiểu,,Áp dụng mã yêu cầu đơn > 500k cho đơn 100k,MIN500,Thông báo đơn hàng không đủ điều kiện áp dụng mã,"{
+    ""success"": false,
+    ""message"": ""Đơn hàng chưa đạt giá trị tối thiểu để áp dụng mã này""
+}",P,Medium
+TC047,Coupon,Hủy áp dụng,Xóa mã giảm giá đã nhập,Đang áp dụng mã thành công,"Nhấn nút ""Xóa/Hủy mã""",Trống,Tổng số tiền quay về giá gốc ban đầu,,P,Medium
+TC048,Payment,Momo thành công,Thanh toán qua ví Momo,,Chọn Momo -> Quét mã thành công,2,"Thanh toán thành công, chuyển hướng về trang xác nhận đơn hàng","{
+    ""success"": true,
+    ""data"": {
+        ""payUrl"": ""https://test-payment.momo.vn/v2/gateway/pay?t=TU9NT3xNT01PNDE3ODUzMTc0OTk3Mjc&s=e33bd77c228ada411831988d88754cfef4335d795a58cc979ba32f054b9cf3c3"",
+        ""orderId"": ""MOMO41785317499727""
+    }
+}",P,High
+TC049,Payment,Momo thất bại,Hủy thanh toán giữa chừng,,Chọn Momo -> Tắt app Momo/Hủy giao dịch,Trống,"Thông báo thanh toán không thành công, đơn hàng giữ trạng thái chờ","<!DOCTYPE html>
+<html lang=""vi"">
+
+<head>
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width,initial-scale=1"">
+    <title>Kết quả thanh toán – CourseDemy</title>
+    <meta name=""description"" content=""Kết quả giao dịch thanh toán khóa học trên CourseDemy."">
+    <link rel=""stylesheet"" href=""css/style.css"">
+    <style>
+        .result-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background:
+                radial-gradient(ellipse at 60% 20%, rgba(99, 102, 241, .08) 0%, transparent 60%),
+                radial-gradient(ellipse at 20% 80%, rgba(52, 211, 153, .05) 0%, transparent 50%),
+                var(--bg);
+        }
+
+        .result-card {
+            width: 100%;
+            max-width: 480px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 48px 40px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp .4s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            line-height: 1;
+        }
+
+        .result-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .result-subtitle {
+            font-size: .95rem;
+            color: var(--text-dim);
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .result-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Status-specific colors */
+        .status-paid .result-title {
+            color: var(--success);
+        }
+
+        .status-paid {
+            border-color: var(--success);
+        }
+
+        .status-failed .result-title {
+            color: var(--danger);
+        }
+
+        .status-failed {
+            border-color: var(--danger);
+        }
+
+        .status-pending .result-title {
+            color: var(--warning);
+        }
+
+        .status-pending {
+            border-color: var(--warning);
+        }
+
+        /* Polling indicator */
+        .polling-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--warning);
+            animation: pulse 1.2s ease infinite;
+            margin: 0 2px;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .3
+            }
+        }
+
+        .polling-info {
+            background: var(--warning-bg);
+            border: 1px solid var(--warning);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            font-size: .85rem;
+            color: var(--warning);
+            margin-bottom: 20px;
+        }
+
+        .order-id-box {
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 16px;
+            font-size: .82rem;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+        }
+
+        .order-id-box strong {
+            color: var(--text);
+            font-family: monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <nav id=""navbar""></nav>
+    <div id=""toast-container""></div>
+    <div id=""spinner"" class=""hidden"">
+        <div class=""spinner-ring""></div>
+    </div>
+
+    <div class=""result-page"">
+        <div class=""result-card"" id=""result-card"">
+            <div class=""result-icon"">⏳</div>
+            <div class=""result-title"">Đang kiểm tra...</div>
+            <div class=""result-subtitle"">Vui lòng chờ trong giây lát.</div>
+        </div>
+    </div>
+
+    <script src=""js/api.js""></script>
+    <script>
+        renderNavbar();
+
+const params   = new URLSearchParams(location.search);
+const orderId  = params.get('orderId') || params.get('order_id') || params.get('vnp_TxnRef');
+const statusQ  = params.get('status') || params.get('vnp_ResponseCode');
+
+let pollCount = 0;
+const MAX_POLLS = 10;
+let pollTimer = null;
+
+async function checkStatus() {
+  if (!orderId) {
+    renderResult('unknown', null);
+    return;
+  }
+
+  const { ok, data } = await apiFetch(`/payments/${orderId}/status`);
+  if (!ok) {
+    // Use URL param as fallback
+    renderResult(statusQ || 'unknown', null);
+    return;
+  }
+
+  const order = data.data;
+  const status = order?.status ?? statusQ ?? 'unknown';
+
+  if (status === 'pending' && pollCount < MAX_POLLS) {
+    renderPending(order);
+    pollCount++;
+    pollTimer = setTimeout(checkStatus, 3000);
+  } else {
+    if (pollTimer) clearTimeout(pollTimer);
+    renderResult(status, order);
+  }
+}
+
+function renderPending(order) {
+  const card = document.getElementById('result-card');
+  card.className = 'result-card status-pending';
+  card.innerHTML = `
+    <div class=""result-icon"">⏳</div>
+    <div class=""result-title"">Đang chờ xác nhận</div>
+    ${orderId ? `<div class=""order-id-box"">Mã đơn: <strong>${orderId}</strong></div>` : ''}
+    <div class=""polling-info"">
+      <span class=""polling-dot""></span>
+      <span class=""polling-dot"" style=""animation-delay:.3s""></span>
+      <span class=""polling-dot"" style=""animation-delay:.6s""></span>
+      &nbsp; Đang kiểm tra trạng thái... (${pollCount}/${MAX_POLLS})
+    </div>
+    <div class=""result-subtitle"">Giao dịch đang được xử lý. Trang sẽ tự cập nhật.</div>
+    <div class=""result-actions"">
+      <a href=""/my-courses.html"" class=""btn btn-outline"">📚 Xem khóa học của tôi</a>
+      <a href=""/index.html"" class=""btn btn-ghost"">🏠 Về trang chủ</a>
+    </div>`;
+}
+
+function renderResult(status, order) {
+  const card = document.getElementById('result-card');
+
+  // Normalize VNPay response codes: 00 = success
+  const isPaid = status === 'paid' || status === '00' || status === 'completed';
+  const isFail = status === 'failed' || status === 'cancelled' || status === 'canceled';
+
+  if (isPaid) {
+    card.className = 'result-card status-paid';
+    card.innerHTML = `
+      <div class=""result-icon"">🎉</div>
+      <div class=""result-title"">Thanh toán thành công!</div>
+      ${orderId ? `<div class=""order-id-box"">Mã đơn: <strong>${orderId}</strong></div>` : ''}
+      <div class=""result-subtitle"">Cảm ơn bạn đã mua khóa học. Bạn có thể bắt đầu học ngay bây giờ!</div>
+      <div class=""result-actions"">
+        <a href=""/my-courses.html"" class=""btn btn-success btn-lg"">📚 Xem khóa học của tôi</a>
+        <a href=""/index.html"" class=""btn btn-ghost"">🏠 Về trang chủ</a>
+      </div>`;
+  } else if (isFail) {
+    card.className = 'result-card status-failed';
+    card.innerHTML = `
+      <div class=""result-icon"">❌</div>
+      <div class=""result-title"">Thanh toán thất bại</div>
+      ${orderId ? `<div class=""order-id-box"">Mã đơn: <strong>${orderId}</strong></div>` : ''}
+      <div class=""result-subtitle"">Giao dịch không thành công hoặc đã bị hủy. Vui lòng thử lại.</div>
+      <div class=""result-actions"">
+        <a href=""/checkout.html"" class=""btn btn-danger btn-lg"">🔄 Thử lại</a>
+        <a href=""/cart.html"" class=""btn btn-outline"">🛒 Về giỏ hàng</a>
+        <a href=""/index.html"" class=""btn btn-ghost"">🏠 Về trang chủ</a>
+      </div>`;
+  } else {
+    // pending exhausted or unknown
+    card.className = 'result-card status-pending';
+    card.innerHTML = `
+      <div class=""result-icon"">⏳</div>
+      <div class=""result-title"">Chờ xác nhận thanh toán</div>
+      ${orderId ? `<div class=""order-id-box"">Mã đơn: <strong>${orderId}</strong></div>` : ''}
+      <div class=""result-subtitle"">Giao dịch đang được xử lý bởi cổng thanh toán. Vui lòng kiểm tra lại sau vài phút.</div>
+      <div class=""result-actions"">
+        <a href=""/my-courses.html"" class=""btn btn-warning btn-lg"">📚 Xem khóa học của tôi</a>
+        <a href=""/checkout.html"" class=""btn btn-outline"">🔄 Thử lại</a>
+        <a href=""/index.html"" class=""btn btn-ghost"">🏠 Về trang chủ</a>
+      </div>`;
+  }
+}
+
+// Init
+checkStatus();
+    </script>
+</body>
+
+</html>",P,High
+TC050,Payment,Đơn hàng 0 đồng,Thanh toán đơn hàng được giảm 100%,Áp dụng coupon 100%,Nhấn Thanh toán,1,Hệ thống xử lý thành công ngay không qua cổng thanh toán,"{
+    ""success"": true,
+    ""message"": ""Thanh toán thành công (demo)"",
+    ""data"": {
+        ""order_id"": 1,
+        ""status"": ""paid""
+    }
+}",P,Medium
+8. Học tập,,,,,,,,,,
+TC051,Learning,Video,Xem video bài học,,Nhấn phát video,Python,Video chạy bình thường,"{
+    ""success"": true,
+    ""data"": {
+        ""enrolled"": true,
+        ""progress_percent"": 0,
+        ""sections"": [
+            {
+                ""id"": 1,
+                ""title"": ""chương 1"",
+                ""position"": 0,
+                ""lessons"": [
+                    {
+                        ""id"": 1,
+                        ""title"": ""Mở đầu"",
+                        ""type"": ""video"",
+                        ""video_url"": ""https://youtu.be/HUkkKh48ygw?si=BwRL85gDuxUla_Mj"",
+                        ""content_body"": null,
+                        ""duration_seconds"": 28,
+                        ""position"": 0,
+                        ""is_preview"": 1,
+                        ""progress"": {
+                            ""is_completed"": false,
+                            ""quiz_score"": null
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}",P,High
+TC052,Learning,Tốc độ video,Thay đổi tốc độ phát,,Chọn tốc độ x1.5 hoặc x2,Python,Video phát nhanh hơn đúng tốc độ chọn,"{
+    ""success"": true,
+    ""data"": {
+        ""enrolled"": true,
+        ""progress_percent"": 0,
+        ""sections"": [
+            {
+                ""id"": 1,
+                ""title"": ""chương 1"",
+                ""position"": 0,
+                ""lessons"": [
+                    {
+                        ""id"": 1,
+                        ""title"": ""Mở đầu"",
+                        ""type"": ""video"",
+                        ""video_url"": ""https://youtu.be/HUkkKh48ygw?si=BwRL85gDuxUla_Mj"",
+                        ""content_body"": null,
+                        ""duration_seconds"": 28,
+                        ""position"": 0,
+                        ""is_preview"": 1,
+                        ""progress"": {
+                            ""is_completed"": false,
+                            ""quiz_score"": null
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}",P,Medium
+TC053,Learning,Chuyển bài tự động,Học hết bài tự động chuyển bài,,Xem hết 100% video bài hiện tại,Python,Hệ thống tự động chuyển sang bài tiếp theo và tích v bài cũ,"{
+    ""success"": true,
+    ""message"": ""Đã đánh dấu hoàn thành"",
+    ""data"": {
+        ""progress_percent"": 50
+    }
+}",P,Medium
+TC054,Quiz,Làm quiz,Nộp quiz,,Làm đầy đủ các câu hỏi và nhấn Nộp,4,Hiển thị điểm số và đáp án chi tiết (nếu có),"{
+    ""success"": true,
+    ""data"": {
+        ""quiz_score"": 100,
+        ""is_completed"": true,
+        ""correct_count"": 1,
+        ""total_questions"": 1,
+        ""progress_percent"": 67
+    }
+}",P,High
+TC055,Quiz,Nộp trống,Nộp quiz khi chưa chọn đáp án,,Nhấn Nộp ngay khi chưa tích câu nào,4,Hiển thị cảnh báo hoặc tính 0 điểm,"{
+    ""success"": false,
+    ""message"": ""answers phải là mảng không rỗng""
+}",P,Medium
+TC056,Quiz,Hết giờ tự động nộp,Làm quiz quá thời gian quy định,,Đợi thời gian đếm ngược về 0,4,Hệ thống tự khóa bài và tự động nộp kết quả,"{
+    ""success"": true,
+    ""data"": {
+        ""quiz_score"": 0,
+        ""is_completed"": false,
+        ""correct_count"": 0,
+        ""total_questions"": 1,
+        ""progress_percent"": 33
+    }
+}",P,High
+TC057,Progress,Lưu tiến độ,Lưu vị trí video đang xem,,Xem video đến phút thứ 10 rồi tắt trình duyệt,Python,"Khi mở lại, video hiển thị đúng từ phút thứ 10","{
+    ""success"": true,
+    ""data"": {
+        ""course_id"": 1,
+        ""total_lessons"": 3,
+        ""completed_lessons"": 1,
+        ""progress_percent"": 33
+    }
+}",P,High
+TC058,Progress,Cập nhật % tiến trình,Tiến độ học tập tổng quan,,Hoàn thành 5 trên 10 bài học,Python,Tiến trình học tập hiển thị chính xác 50% ở dashboard,"{
+    ""success"": true,
+    ""data"": {
+        ""course_id"": 1,
+        ""total_lessons"": 3,
+        ""completed_lessons"": 1,
+        ""progress_percent"": 33
+    }
+}",P,High
+TC059,Q&A,Đặt câu hỏi,Gửi câu hỏi trong bài học,,Nhập câu hỏi và gửi,2,"Lưu câu hỏi thành công, hiển thị ở tab thảo luận","{
+    ""success"": true,
+    ""message"": ""Đặt câu hỏi thành công"",
+    ""data"": {
+        ""id"": 2,
+        ""title"": ""Hỏi về bài học Java"",
+        ""content"": ""Cho em hỏi cú pháp khai báo biến trong Java ạ?"",
+        ""created_at"": ""2026-07-31 16:38:30""
+    }
+}",P,Medium
+TC060,Q&A,Câu hỏi trống,Gửi nội dung rỗng,,Để trống khung thảo luận và bấm gửi,2,Nút gửi bị ẩn hoặc báo lỗi không được để trống,"{
+    ""success"": false,
+    ""message"": ""Vui lòng nhập đầy đủ tiêu đề và nội dung câu hỏi""
+}",P,Low
+TC061,Review,Đánh giá,Đánh giá 5 sao kèm bình luận,Đã hoàn thành khóa học,Chọn 5 sao -> Nhập nhận xét -> Gửi,2,"Đã lưu đánh giá, hiển thị công khai ở trang chi tiết khóa học","{
+    ""success"": true,
+    ""message"": ""Đánh giá khóa học thành công"",
+    ""data"": {
+        ""id"": 2,
+        ""rating"": 5,
+        ""comment"": ""Khóa học rất hay và bổ ích!"",
+        ""created_at"": ""2026-07-31 16:45:12""
+    }
+}",P,Medium
+TC062,Review,Sửa đánh giá,Thay đổi nội dung review,Đã đánh giá trước đó,Nhấn sửa -> Đổi thành 4 sao -> Lưu,2,Cập nhật điểm đánh giá mới của khóa học thành công,"<!DOCTYPE html>
+<html lang=""en"">
+
+<head>
+    <meta charset=""utf-8"">
+    <title>Error</title>
+</head>
+
+<body>
+    <pre>Cannot PUT /api/courses/1/reviews</pre>
+</body>
+
+</html>",P,Low
+TC063,Certificate,Tải PDF,Chứng chỉ hoàn thành,Đạt 100% tiến trình học,Nhấn nút Tải chứng chỉ,1,File PDF tải về máy chứa đầy đủ tên học viên và tên khóa học,certificate-course-1.pdf,P,High
+TC064,Certificate,Chưa đủ điều kiện tải,Kiểm tra nút tải chứng chỉ,Tiến trình < 100%,Vào trang chứng chỉ,2,Nút tải bị ẩn hoặc hiển thị thông báo chưa hoàn thành khóa học,"{
+    ""success"": false,
+    ""message"": ""Bạn cần hoàn thành 100% khóa học để nhận chứng chỉ""
+}",P,High
+9. Quản lí khóa học,,,,,,,,,,
+TC065,Instructor,Tạo khóa học,Tạo mới khóa học (Draft),Tài khoản Giảng viên,"Nhập tiêu đề, mô tả -> Lưu nháp",Khóa học Lap trinh C# Co Ban,Khóa học được tạo ở trạng thái Chờ duyệt hoặc Bản nháp,"{
+    ""success"": true,
+    ""message"": ""Tạo khóa học thành công, đang chờ duyệt"",
+    ""data"": {
+        ""id"": 19,
+        ""title"": ""Khóa học Lap trinh C# Co Ban"",
+        ""status"": ""pending"",
+        ""created_at"": ""2026-07-29 10:55:31""
+    }
+}",P,High
+TC066,Instructor,Thiếu thông tin bắt buộc,Tạo khóa học để trống tiêu đề,Tài khoản Giảng viên,Để trống tiêu đề -> Lưu,Trống tiêu đề,Báo lỗi trường tiêu đề không được bỏ trống,"{
+    ""success"": false,
+    ""message"": ""Tiêu đề khóa học không được để trống""
+}",P,High
+TC067,Instructor,Sửa khóa học,Cập nhật thông tin khóa học,Khóa học ở trạng thái bản nháp,Thay đổi giá khóa học -> Lưu,350000,Thông tin giá mới được cập nhật thành công,"{
+    ""success"": true,
+    ""message"": ""Cập nhật khóa học thành công"",
+    ""data"": {
+        ""id"": 8,
+        ""title"": ""Lập trình Python cơ bản (Updated)"",
+        ""description"": ""Khóa học lập trình Python từ cơ bản đến nâng cao dành cho người mới bắt đầu."",
+        ""price"": 350000,
+        ""status"": ""approved"",
+        ""thumbnail"": null
+    }
+}",P,High
+TC068,Instructor,Upload video hợp lệ,Tải lên video bài học (url),Tài khoản Giảng viên,Chọn url video,https://www.youtube.com/watch?v=dQw4w9WgXcQ,"Tải lên thành công, hệ thống xử lý (processing) video tốt","{
+    ""success"": true,
+    ""message"": ""Tạo bài học thành công"",
+    ""data"": {
+        ""id"": 3,
+        ""title"": ""Bài học video Python"",
+        ""type"": ""video"",
+        ""position"": 2
+    }
+}",P,Medium
+TC069,Instructor,Upload video sai định dạng,Tải lên chuỗi định dạng khác,Tài khoản Giảng viên,Điền vào chuôi không phải url,https://example.com/intro.exe,Thông báo định dạng file không hỗ trợ,,P,Medium
+TC070,Instructor,Tạo quiz,Thêm câu hỏi trắc nghiệm vào bài học,Tài khoản Giảng viên,"Nhập câu hỏi, 4 đáp án, chọn đáp án đúng -> Lưu"," ""question_text"": ""Java là ngôn ngữ biên dịch hay thông dịch?"",
+  ""options"": [
+    { ""option_text"": ""Thông dịch"", ""is_correct"": true },
+    { ""option_text"": ""Biên dịch"", ""is_correct"": false }
+  ]",Đã tạo thành công bài quiz trong chương mục,"{
+    ""success"": true,
+    ""message"": ""Tạo bài học thành công"",
+    ""data"": {
+        ""id"": 3,
+        ""title"": ""Câu hỏi ôn tập Java"",
+        ""type"": ""quiz"",
+        ""position"": 2
+    }
+}",P,Medium
+TC071,Instructor,Trả lời câu hỏi,Giảng viên phản hồi học viên,Có câu hỏi của học viên,Chọn câu hỏi -> Nhập câu trả lời -> Gửi,"{
+  ""content"": ""Chào em, cú pháp khai báo biến trong C# là: DataType variableName = value;""
+}",Hệ thống hiển thị câu trả lời của giảng viên ngay dưới câu hỏi,"{
+    ""success"": true,
+    ""message"": ""Trả lời câu hỏi thành công"",
+    ""data"": {
+        ""id"": 1,
+        ""content"": ""Chào em, cú pháp khai báo biến trong C# là: DataType variableName = value;"",
+        ""is_instructor_answer"": 1,
+        ""created_at"": ""2026-07-31 12:25:29""
+    }
+}",P,Medium
+TC072,Instructor,Rút tiền hợp lệ,Yêu cầu rút tiền trên doanh thu,Số dư tài khoản > 200k,Tạo yêu cầu rút -> Nhập số tiền -> Gửi,500000,"Tạo yêu cầu rút thành công, trạng thái ""Chờ duyệt""","{
+    ""success"": true,
+    ""message"": ""Tạo yêu cầu rút tiền thành công, đang chờ Admin duyệt"",
+    ""data"": {
+        ""withdrawal_id"": 4,
+        ""amount"": 500000
+    }
+}",P,High
+TC073,Instructor,Rút tiền vượt số dư,Yêu cầu rút số tiền lớn hơn số dư,Số dư hiện tại 1 triệu,Nhập số tiền rút là 2 triệu -> Gửi,2000000,Thông báo số dư không đủ để thực hiện giao dịch,"{
+    ""success"": false,
+    ""message"": ""Số dư tài khoản không đủ để rút""
+}",P,High
+TC074,Instructor,Rút tiền dưới mức tối thiểu,Rút số tiền nhỏ hơn quy định,Mức tối thiểu là 50k,Nhập số tiền rút là 20k -> Gửi,20000,Thông báo số tiền rút tối thiểu phải từ 50k trở lên,"{
+    ""success"": false,
+    ""message"": ""Số tiền rút tối thiểu phải từ 50.000đ trở lên""
+}",P,Medium
+TC075,Instructor,Xem thống kê doanh thu,Kiểm tra biểu đồ doanh thu,Đã có doanh thu khóa học,Vào trang Thống kê doanh thu,Trống,Hiển thị biểu đồ doanh thu chính xác theo tháng/năm,"{
+    ""success"": true,
+    ""data"": {
+        ""period"": ""12months"",
+        ""labels"": [
+            ""2025-08"",
+            ""2025-09"",
+            ""2025-10"",
+            ""2025-11"",
+            ""2025-12"",
+            ""2026-01"",
+            ""2026-02"",
+            ""2026-03"",
+            ""2026-04"",
+            ""2026-05"",
+            ""2026-06"",
+            ""2026-07""
+        ],
+        ""revenue"": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+        ]
+    }
+}",P,Medium
+TC076,Instructor,Thống kê học viên,Xem danh sách học viên đăng ký,Có học viên mua khóa học,Vào trang quản lý học viên,Trống,"Hiển thị đầy đủ danh sách, ngày tham gia, tiến độ học của từng người","{
+    ""success"": true,
+    ""data"": {
+        ""students"": [],
+        ""total"": 0,
+        ""page"": 1,
+        ""totalPages"": 0
+    }
+}",P,Medium
+TC077,Instructor,Xóa khóa học nháp,Xóa bỏ khóa học chưa xuất bản,Khóa học ở trạng thái bản nháp,Nhấn Xóa khóa học -> Xác nhận,8,Khóa học biến mất khỏi danh sách quản lý của giảng viên,"{
+    ""success"": true,
+    ""message"": ""Đã xóa khóa học""
+}",P,Medium
+Chức năng - Giảng viên,,,,,,,,,,
+TC078,Admin,Duyệt khóa học,Approve khóa học hợp lệ,Tài khoản Admin,Vào danh sách chờ duyệt -> Nhấp Approve,Java Spring Boot,"Khóa học chuyển sang trạng thái ""Đã xuất bản"" (Published), công khai trên web",,,High
+TC079,Admin,Từ chối duyệt khóa học,Reject khóa học vi phạm chính sách,Tài khoản Admin,Vào danh sách chờ duyệt -> Nhấp Reject -> Nhập lý do,Phishing,"Khóa học chuyển sang trạng thái ""Bị từ chối"", gửi lý do về cho GV",,,High
+TC080,Admin,Khóa user,Khóa tài khoản vi phạm tiêu chuẩn,Tài khoản Admin,Tìm user -> Nhấn Khóa tài khoản -> Xác nhận,Đào Vinh,"User bị khóa ngay lập tức, bị đăng xuất khỏi hệ thống",,,High
+TC081,Admin,Mở khóa user,Mở lại tài khoản bị khóa trước đó,Tài khoản Admin,Tìm user bị khóa -> Nhấn Mở khóa,Đào Vinh,Tài khoản hoạt động trở lại bình thường,,,Medium
+TC082,Admin,Tạo coupon hệ thống,Tạo mã giảm giá toàn sàn,Tài khoản Admin,"Nhập thông tin mã SALE30, % giảm, ngày hết hạn -> Lưu","SALE30, 30%, 31-12-2026",Mã coupon mới hiển thị trong hệ thống và có hiệu lực,,,Medium
+TC083,Admin,Duyệt rút tiền thành công,Xử lý lệnh rút tiền tài khoản GV,Có yêu cầu rút tiền Chờ duyệt,Nhấn Duyệt lệnh rút tiền,1,"Trạng thái chuyển sang ""Thành công"", số dư giảng viên bị trừ tiền",,,High
+TC084,Admin,Từ chối lệnh rút tiền,Từ chối lệnh rút tiền nghi vấn,Có yêu cầu rút tiền Chờ duyệt,Nhấn Từ chối -> Ghi lý do,2,"Trạng thái chuyển thành ""Bị hủy"", số tiền hoàn lại số dư giảng viên",,,High
+TC085,Admin,Thống kê tổng quan,Xem dashboard hệ thống,Tài khoản Admin,Mở trang tổng quan,qvinh@gmail.com,"Hiển thị đúng tổng số User, tổng doanh thu, tổng số khóa học hiện tại",,,Medium
+TC086,Admin,Phân quyền tài khoản,Chuyển user thường thành Giảng viên,Tài khoản Admin,Vào quản lý user -> Sửa Role thành Instructor -> Lưu,Đào Vinh,User đăng nhập lại sẽ có đầy đủ tính năng của Giảng viên,,,High
+10. Admin,,,,,,,,,,
+TC087,Profile,Thay đổi avatar,Cập nhật ảnh đại diện mới,Đã đăng nhập,Chọn ảnh .jpg dưới 2MB -> Lưu,avatar.jpg,Avatar mới được hiển thị trên thanh menu và trang cá nhân,,,Medium
+TC088,Profile,Đổi mật khẩu thành công,Thay đổi mật khẩu tài khoản,Đã đăng nhập,Nhập mật khẩu cũ + mật khẩu mới -> Lưu,"Pass: 123456, Confirm: 123456, New: 12345678","Mật khẩu đổi thành công, hệ thống yêu cầu đăng nhập lại bằng pass mới",,,High
+TC089,Profile,Đổi mật khẩu sai pass cũ,Nhập sai mật khẩu hiện tại,Đã đăng nhập,Nhập mật khẩu cũ sai -> Nhập mật khẩu mới -> Lưu,"Pass: 123456, Confirm: 123457",Thông báo mật khẩu hiện tại không chính xác,,,High
+TC090,Notification,Nhận thông báo mua khóa học,Thông báo real-time khi mua thành công,Học viên mua khóa học,Kiểm tra biểu tượng chuông thông báo,Java,Bạn đã đăng ký thành công khóa học...,,,Medium
+TC091,Notification,Thông báo có câu trả lời,Học viên nhận được phản hồi từ GV,GV đã trả lời câu hỏi Q&A,Kiểm tra thông báo của học viên,QA,Giảng viên đã trả lời câu hỏi của bạn...,,,Medium
+TC092,System,Đăng xuất,Đăng xuất tài khoản khỏi hệ thống,Đang đăng nhập,Click Đăng xuất -> Xác nhận,qvinh@gmail.com,"Xóa token/session, đưa người dùng quay lại trang chủ ở trạng thái chưa đăng nhập",,,High

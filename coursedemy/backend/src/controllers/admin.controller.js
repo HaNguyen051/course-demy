@@ -131,7 +131,7 @@ function getUsers(req, res) {
       .get(...params);
 
     const rows = db.prepare(`
-      SELECT id, full_name, email, role, avatar, created_at, is_active
+      SELECT id, full_name, email, role, avatar, created_at, is_active, status
       FROM users
       ${where}
       ORDER BY created_at DESC
@@ -759,6 +759,48 @@ function getAdminTopCourses(req, res) {
     return res.status(200).json({ success: true, data });
   } catch (err) {
     console.error('[getAdminTopCourses]', err);
+    return res.status(500).json({ success: false, message: 'Lỗi server' });
+  }
+}
+
+// ─── PUT /api/admin/users/:id/status ─────────────────────────────────────────
+// Body: { is_active: boolean }
+// Frontend toggle gửi is_active=true (mở khóa) hoặc is_active=false (khóa)
+function updateUserStatus(req, res) {
+  const userId = parseInt(req.params.id);
+  const { is_active } = req.body;
+
+  if (typeof is_active !== 'boolean') {
+    return res.status(400).json({ success: false, message: 'Trường is_active phải là boolean' });
+  }
+
+  try {
+    const user = db
+      .prepare('SELECT id, role, status, is_active FROM users WHERE id = ?')
+      .get(userId);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy người dùng' });
+    }
+
+    if (user.role === 'admin') {
+      return res.status(400).json({ success: false, message: 'Không thể khóa tài khoản admin' });
+    }
+
+    const newStatus   = is_active ? 'active' : 'locked';
+    const newIsActive = is_active ? 1 : 0;
+    const message     = is_active ? 'Đã mở khóa tài khoản' : 'Đã khóa tài khoản';
+
+    db.prepare('UPDATE users SET status = ?, is_active = ? WHERE id = ?')
+      .run(newStatus, newIsActive, userId);
+
+    return res.status(200).json({
+      success: true,
+      message,
+      data: { id: userId, status: newStatus, is_active: newIsActive },
+    });
+  } catch (err) {
+    console.error('[updateUserStatus]', err);
     return res.status(500).json({ success: false, message: 'Lỗi server' });
   }
 }

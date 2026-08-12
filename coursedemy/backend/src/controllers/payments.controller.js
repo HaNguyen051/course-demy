@@ -1,7 +1,6 @@
 const db    = require('../config/database');
 const axios = require('axios');
 const { createMomoSignature, verifyMomoSignature } = require('../utils/momo.util');
-const { buildVnpayUrl, verifyVnpaySignature }       = require('../utils/vnpay.util');
 
 // ─── Helper: side-effects sau thanh toán thành công (enrollments + coupon + cart + instructor income) ─
 // Caller tự chịu trách nhiệm cập nhật payments.status và orders.status.
@@ -255,156 +254,6 @@ function momoReturn(req, res) {
   }
 }
 
-// ─── POST /api/payments/vnpay/create ─────────────────────────────────────────
-function vnpayCreate(req, res) {
-  try {
-    const tmnCode    = process.env.VNPAY_TMN_CODE;
-    const hashSecret = process.env.VNPAY_HASH_SECRET;
-    const vnpayUrl   = process.env.VNPAY_URL;
-    const returnUrl  = process.env.VNPAY_RETURN_URL;
-
-    if (!tmnCode || !hashSecret) {
-      return res.status(503).json({
-        success: false,
-        message: 'Chưa cấu hình VNPay sandbox, vui lòng đăng ký merchant test tại sandbox.vnpayment.vn/devreg',
-      });
-    }
-
-    const { order_id } = req.body;
-    if (!order_id) {
-      return res.status(400).json({ success: false, message: 'Thiếu order_id' });
-    }
-
-    const { order, error } = validateOrder(Number(order_id), req.user.id);
-    if (error) return res.status(error.status).json({ success: false, message: error.message });
-
-    // Tính thời gian hiện tại (giờ VN = UTC+7) dạng yyyyMMddHHmmss
-    const now   = new Date(Date.now() + 7 * 60 * 60 * 1000);
-    const pad   = (n) => String(n).padStart(2, '0');
-    const createDate = [
-      now.getUTCFullYear(),
-      pad(now.getUTCMonth() + 1),
-      pad(now.getUTCDate()),
-      pad(now.getUTCHours()),
-      pad(now.getUTCMinutes()),
-      pad(now.getUTCSeconds()),
-    ].join('');
-
-    const txnRef = `${order.id}-${Date.now()}`;
-
-    const params = {
-      vnp_Version:   '2.1.0',
-      vnp_Command:   'pay',
-      vnp_TmnCode:   tmnCode,
-      vnp_Amount:    String(Math.round(order.total_amount * 100)),
-      vnp_CurrCode:  'VND',
-      vnp_TxnRef:    txnRef,
-      vnp_OrderInfo: `Thanh toan don hang ${order.id}`,
-      vnp_OrderType: 'other',
-      vnp_Locale:    'vn',
-      vnp_ReturnUrl: returnUrl,
-      vnp_IpAddr:    req.ip || '127.0.0.1',
-      vnp_CreateDate: createDate,
-    };
-
-    const payUrl = buildVnpayUrl(params, hashSecret, vnpayUrl);
-
-    // Lưu payments record (pending)
-    db.prepare(`
-      INSERT INTO payments (order_id, method, amount, request_id, status)
-      VALUES (?, 'vnpay', ?, ?, 'pending')
-    `).run(order.id, order.total_amount, txnRef);
-
-    return res.status(200).json({
-      success: true,
-      data: { payUrl },
-    });
-  } catch (err) {
-    console.error('[vnpayCreate]', err);
-    return res.status(500).json({ success: false, message: 'Lỗi server' });
-  }
-}
-
-// ─── GET /api/payments/vnpay/ipn ─────────────────────────────────────────────
-// Public — VNPay gọi server-to-server
-function vnpayIpn(req, res) {
-  try {
-    const query      = req.query;
-    const hashSecret = process.env.VNPAY_HASH_SECRET;
-
-    // Xác minh chữ ký
-    if (!verifyVnpaySignature(query, hashSecret)) {
-      return res.json({ RspCode: '97', Message: 'Invalid signature' });
-    }
-
-    const txnRef = query.vnp_TxnRef;
-    const payment = db.prepare(`
-      SELECT p.*, o.user_id, o.coupon_id, o.total_amount
-      FROM payments p
-      JOIN orders o ON p.order_id = o.id
-      WHERE p.request_id = ?
-    `).get(txnRef);
-
-    if (!payment) {
-      return res.json({ RspCode: '01', Message: 'Order not found' });
-    }
-
-    const order = {
-      id: payment.order_id,
-      user_id: payment.user_id,
-      coupon_id: payment.coupon_id,
-      total_amount: payment.total_amount,
-    };
-
-    const doUpdate = db.transaction(() => {
-      if (query.vnp_ResponseCode === '00') {
-        db.prepare(`UPDATE payments SET status = 'success', transaction_id = ?, updated_at = datetime('now') WHERE id = ?`)
-          .run(query.vnp_TransactionNo || '', payment.id);
-        db.prepare(`UPDATE orders SET status = 'paid', payment_method = 'vnpay' WHERE id = ?`)
-          .run(order.id);
-        applyPaymentSideEffects(order.id, order.coupon_id, payment.user_id);
-      } else {
-        db.prepare(`UPDATE payments SET status = 'failed', updated_at = datetime('now') WHERE id = ?`)
-          .run(payment.id);
-        db.prepare(`UPDATE orders SET status = 'failed' WHERE id = ?`)
-          .run(order.id);
-      }
-    });
-
-    doUpdate();
-    return res.json({ RspCode: '00', Message: 'Confirm Success' });
-  } catch (err) {
-    console.error('[vnpayIpn]', err);
-    return res.json({ RspCode: '99', Message: 'Unknown error' });
-  }
-}
-
-// ─── GET /api/payments/vnpay/return ──────────────────────────────────────────
-// Public — VNPay redirect người dùng về
-function vnpayReturn(req, res) {
-  try {
-    const query       = req.query;
-    const hashSecret  = process.env.VNPAY_HASH_SECRET;
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-
-    const verified = verifyVnpaySignature(query, hashSecret);
-    if (!verified) {
-      console.warn('[vnpayReturn] Signature mismatch — unverified redirect');
-    }
-
-    // Lấy order_id từ txnRef (format: `${order_id}-${timestamp}`)
-    const txnRef  = query.vnp_TxnRef || '';
-    const orderId = txnRef.split('-')[0];
-    const status  = query.vnp_ResponseCode === '00' ? 'paid' : 'failed';
-
-    return res.redirect(302, `${frontendUrl}/payment-result.html?orderId=${orderId}&status=${status}`);
-  } catch (err) {
-    console.error('[vnpayReturn]', err);
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    return res.redirect(302, `${frontendUrl}/payment-result.html?status=failed`);
-  }
-}
-
 // ─── GET /api/payments/:orderId/status ───────────────────────────────────────
 function getPaymentStatus(req, res) {
   try {
@@ -515,8 +364,5 @@ module.exports = {
   momoCreate,
   momoIpn,
   momoReturn,
-  vnpayCreate,
-  vnpayIpn,
-  vnpayReturn,
   getPaymentStatus,
 };
