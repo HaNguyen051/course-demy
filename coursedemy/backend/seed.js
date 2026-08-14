@@ -252,12 +252,12 @@ async function seed() {
   // ─── Course 1: Python ─────────────────────────────────────────────────────────
   insertSectionWithLessons(course1.id, 'Gioi thieu & Cai dat moi truong', 0, [
     { title: 'Khoa hoc nay day gi? Lo trinh hoc Python', type: 'video', video_url: 'https://www.youtube.com/embed/rfscVS0vtbw', duration_seconds: 480, is_preview: true },
-    { title: 'Cai dat Python va VS Code', type: 'video', video_url: 'https://www.youtube.com/embed/_uQrJ0TkZlc', duration_seconds: 720, is_preview: true },
-    { title: 'Chay chuong trinh Python dau tien - Hello World', type: 'video', video_url: 'https://www.youtube.com/embed/kqtD5dpn9C8', duration_seconds: 360, is_preview: false },
+    { title: 'Cai dat Python va VS Code', type: 'video', video_url: 'https://www.youtube.com/embed/VukelI2iyZU', duration_seconds: 720, is_preview: true },
+    { title: 'Chay chuong trinh Python dau tien - Hello World', type: 'video', video_url: 'https://www.youtube.com/embed/rkX_TWCZS8s', duration_seconds: 360, is_preview: false },
   ]);
 
   insertSectionWithLessons(course1.id, 'Cu phap co ban Python', 1, [
-    { title: 'Bien, kieu du lieu va toan tu', type: 'video', video_url: 'https://www.youtube.com/embed/khKv-8q7YmY', duration_seconds: 900, is_preview: false },
+    { title: 'Bien, kieu du lieu va toan tu', type: 'video', video_url: 'https://www.youtube.com/embed/cQT33yu9pY8', duration_seconds: 900, is_preview: false },
     {
       title: 'Tong quan kieu du lieu Python', type: 'content', is_preview: false,
       content_body: `## Kieu du lieu trong Python
@@ -290,7 +290,7 @@ is_student = True   # bool
 scores = [9, 8, 7]  # list
 \`\`\``,
     },
-    { title: 'Vong lap for va while', type: 'video', video_url: 'https://www.youtube.com/embed/6iF8Xb7Z3wQ', duration_seconds: 1020, is_preview: false },
+    { title: 'Vong lap for va while', type: 'video', video_url: 'https://www.youtube.com/embed/dHANJ4l6fwA', duration_seconds: 1020, is_preview: false },
     {
       title: 'Kiem tra - Cu phap co ban Python', type: 'quiz', is_preview: false,
       questions: [
@@ -304,7 +304,7 @@ scores = [9, 8, 7]  # list
 
   insertSectionWithLessons(course1.id, 'Ham va lap trinh huong doi tuong', 2, [
     { title: 'Dinh nghia va goi ham trong Python', type: 'video', video_url: 'https://www.youtube.com/embed/9Os0o3wzS_I', duration_seconds: 1140, is_preview: false },
-    { title: 'Lap trinh huong doi tuong - Class & Object', type: 'video', video_url: 'https://www.youtube.com/embed/JeznW_7DlB0', duration_seconds: 1500, is_preview: false },
+    { title: 'Lap trinh huong doi tuong - Class & Object', type: 'video', video_url: 'https://www.youtube.com/embed/apACNr7DC_s', duration_seconds: 1500, is_preview: false },
     { title: 'Ke thua va Polymorphism trong Python', type: 'video', video_url: 'https://www.youtube.com/embed/RSl87lqOXDE', duration_seconds: 1260, is_preview: false },
     {
       title: 'Kiem tra - Ham va OOP', type: 'quiz', is_preview: false,
@@ -319,7 +319,7 @@ scores = [9, 8, 7]  # list
   // ─── Course 2: JavaScript Fullstack ──────────────────────────────────────────
   insertSectionWithLessons(course2.id, 'JavaScript ES6+ hien dai', 0, [
     { title: 'Arrow Function, Template Literal va Destructuring', type: 'video', video_url: 'https://www.youtube.com/embed/NCwa_xi0Uuc', duration_seconds: 960, is_preview: true },
-    { title: 'Promise, Async/Await va xu ly bat dong bo', type: 'video', video_url: 'https://www.youtube.com/embed/V_Kr9OSfDeU', duration_seconds: 1320, is_preview: false },
+    { title: 'Promise, Async/Await va xu ly bat dong bo', type: 'video', video_url: 'https://www.youtube.com/embed/DHvZLI7Db8E', duration_seconds: 1320, is_preview: false },
     {
       title: 'Module ES6 - import/export', type: 'content', is_preview: false,
       content_body: `## Module trong JavaScript ES6

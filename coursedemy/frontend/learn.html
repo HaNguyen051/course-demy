@@ -583,7 +583,7 @@ function renderVideo(lesson) {
   const isCompleted = lesson.progress?.is_completed ?? false;
   let videoHtml = '';
   if (lesson.video_url) {
-    const ytMatch = lesson.video_url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+    const ytMatch = lesson.video_url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&?\s]+)/);
     if (ytMatch) {
       videoHtml = `<iframe src="https://www.youtube.com/embed/${ytMatch[1]}" 
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
@@ -596,7 +596,7 @@ function renderVideo(lesson) {
   }
 
   const canQnA = isEnrolled && currentUser?.role === 'student';
-  const isYoutube = lesson.video_url && /(?:youtube\.com\/watch\?v=|youtu\.be\/)/.test(lesson.video_url);
+  const isYoutube = lesson.video_url && /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)/.test(lesson.video_url);
   const speedBarHtml = (!isYoutube && lesson.video_url) ? `
     <div class="video-speed-bar">
       <span class="video-speed-label">⚡ Tốc độ phát:</span>
